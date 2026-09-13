@@ -1,7 +1,6 @@
 # HATCHLAB
 
 > Authentication Security Laboratory
-
 HATCHLAB is a controlled local laboratory for studying authentication attacks, defensive mechanisms, security event detection, and real-time observability.
 
 ## Project status
@@ -15,9 +14,7 @@ HATCHLAB is a controlled local laboratory for studying authentication attacks, d
 ## Safety
 
 HATCHLAB is designed exclusively for authorized testing inside its own local authentication environment.
-
 It does not support:
-
 - Arbitrary external targets
 - CAPTCHA bypass
 - MFA bypass
