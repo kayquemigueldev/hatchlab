@@ -85,4 +85,23 @@ public class SecurityEventService {
             );
         };
     }
+
+    public void recordRateLimitTriggered(
+            String username,
+            AuthenticationSource source,
+            UUID attackSessionId
+    ) {
+        SecurityEvent event = new SecurityEvent(
+                Instant.now(),
+                SecurityEventType.RATE_LIMIT_TRIGGERED,
+                SecurityEventSeverity.HIGH,
+                source,
+                username,
+                "Authentication rate limit was triggered.",
+                attackSessionId
+        );
+
+        securityEventRepository.save(event);
+    }
+
 }
