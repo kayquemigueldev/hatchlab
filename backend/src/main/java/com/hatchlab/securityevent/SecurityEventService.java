@@ -104,4 +104,22 @@ public class SecurityEventService {
         securityEventRepository.save(event);
     }
 
+    public void recordAccountLocked(
+            String username,
+            AuthenticationSource source,
+            UUID attackSessionId
+    ) {
+        SecurityEvent event = new SecurityEvent(
+                Instant.now(),
+                SecurityEventType.ACCOUNT_LOCKED,
+                SecurityEventSeverity.HIGH,
+                source,
+                username,
+                "Account was temporarily locked after repeated failures.",
+                attackSessionId
+        );
+
+        securityEventRepository.save(event);
+    }
+
 }

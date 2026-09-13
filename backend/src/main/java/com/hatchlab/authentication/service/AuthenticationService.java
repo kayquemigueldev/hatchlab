@@ -6,6 +6,7 @@ import com.hatchlab.authentication.domain.AuthenticationOutcome;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.authenticationattempt.AuthenticationAttempt;
 import com.hatchlab.authenticationattempt.AuthenticationAttemptRepository;
+import com.hatchlab.defense.AccountLockoutService;
 import com.hatchlab.defense.RateLimitService;
 import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.user.LabUser;
@@ -25,6 +26,7 @@ public class AuthenticationService {
     private final AuthenticationAttemptRepository authenticationAttemptRepository;
     private final SecurityEventService securityEventService;
     private final RateLimitService rateLimitService;
+    private final AccountLockoutService accountLockoutService;
     private final PasswordEncoder passwordEncoder;
     private final String dummyPasswordHash;
 
@@ -33,6 +35,7 @@ public class AuthenticationService {
             AuthenticationAttemptRepository authenticationAttemptRepository,
             SecurityEventService securityEventService,
             RateLimitService rateLimitService,
+            AccountLockoutService accountLockoutService,
             PasswordEncoder passwordEncoder
     ) {
         this.labUserRepository = labUserRepository;
@@ -40,6 +43,7 @@ public class AuthenticationService {
                 authenticationAttemptRepository;
         this.securityEventService = securityEventService;
         this.rateLimitService = rateLimitService;
+        this.accountLockoutService = accountLockoutService;
         this.passwordEncoder = passwordEncoder;
         this.dummyPasswordHash =
                 passwordEncoder.encode("hatchlab-dummy-password");
@@ -62,34 +66,22 @@ public class AuthenticationService {
         String normalizedUsername = request.username().trim();
 
         if (rateLimitService.isBlocked(normalizedUsername)) {
-            AuthenticationOutcome outcome =
-                    AuthenticationOutcome.BLOCKED;
-
-            saveAttempt(
+            return handleRateLimitBlock(
                     normalizedUsername,
                     source,
-                    outcome,
                     startedAt
             );
-
-            securityEventService.recordAuthentication(
-                    normalizedUsername,
-                    source,
-                    outcome,
-                    null
-            );
-
-            securityEventService.recordRateLimitTriggered(
-                    normalizedUsername,
-                    source,
-                    null
-            );
-
-            return LoginResponse.blocked();
         }
 
-        AuthenticationOutcome outcome =
-                determineOutcome(normalizedUsername, request.password());
+        Optional<LabUser> optionalUser =
+                labUserRepository.findByUsernameIgnoreCase(
+                        normalizedUsername
+                );
+
+        AuthenticationOutcome outcome = determineOutcome(
+                optionalUser,
+                request.password()
+        );
 
         saveAttempt(
                 normalizedUsername,
@@ -105,16 +97,28 @@ public class AuthenticationService {
                 null
         );
 
+        if (outcome == AuthenticationOutcome.FAILURE) {
+            boolean accountWasLocked =
+                    accountLockoutService.registerFailure(
+                            normalizedUsername
+                    );
+
+            if (accountWasLocked) {
+                securityEventService.recordAccountLocked(
+                        normalizedUsername,
+                        source,
+                        null
+                );
+            }
+        }
+
         return toResponse(outcome);
     }
 
     private AuthenticationOutcome determineOutcome(
-            String username,
+            Optional<LabUser> optionalUser,
             String password
     ) {
-        Optional<LabUser> optionalUser =
-                labUserRepository.findByUsernameIgnoreCase(username);
-
         if (optionalUser.isEmpty()) {
             passwordEncoder.matches(password, dummyPasswordHash);
             return AuthenticationOutcome.FAILURE;
@@ -122,9 +126,15 @@ public class AuthenticationService {
 
         LabUser user = optionalUser.get();
 
-        if (!user.isEnabled() || user.isLocked(Instant.now())) {
+        if (!user.isEnabled()) {
             return AuthenticationOutcome.BLOCKED;
         }
+
+        if (accountLockoutService.isBlocked(user)) {
+            return AuthenticationOutcome.BLOCKED;
+        }
+
+        accountLockoutService.clearExpiredLock(user);
 
         if (passwordEncoder.matches(
                 password,
@@ -134,6 +144,32 @@ public class AuthenticationService {
         }
 
         return AuthenticationOutcome.FAILURE;
+    }
+
+    private LoginResponse handleRateLimitBlock(
+            String username,
+            AuthenticationSource source,
+            Instant startedAt
+    ) {
+        AuthenticationOutcome outcome =
+                AuthenticationOutcome.BLOCKED;
+
+        saveAttempt(username, source, outcome, startedAt);
+
+        securityEventService.recordAuthentication(
+                username,
+                source,
+                outcome,
+                null
+        );
+
+        securityEventService.recordRateLimitTriggered(
+                username,
+                source,
+                null
+        );
+
+        return LoginResponse.blocked();
     }
 
     private void saveAttempt(
