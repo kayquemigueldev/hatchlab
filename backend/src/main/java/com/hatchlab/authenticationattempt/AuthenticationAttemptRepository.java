@@ -14,4 +14,10 @@ public interface AuthenticationAttemptRepository
             AuthenticationOutcome outcome,
             Instant attemptedAfter
     );
+
+    long countByClientIdentifierAndOutcomeAndAttemptedAtGreaterThanEqual(
+            String clientIdentifier,
+            AuthenticationOutcome outcome,
+            Instant attemptedAfter
+    );
 }

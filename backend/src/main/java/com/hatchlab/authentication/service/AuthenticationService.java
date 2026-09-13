@@ -10,6 +10,7 @@ import com.hatchlab.defense.AccountLockoutService;
 import com.hatchlab.defense.ProgressiveDelayService;
 import com.hatchlab.defense.RateLimitService;
 import com.hatchlab.defense.SuspiciousActivityDetectionService;
+import com.hatchlab.defense.ClientThrottlingService;
 import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.user.LabUser;
 import com.hatchlab.user.LabUserRepository;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthenticationService {
@@ -30,9 +32,10 @@ public class AuthenticationService {
     private final RateLimitService rateLimitService;
     private final AccountLockoutService accountLockoutService;
     private final ProgressiveDelayService progressiveDelayService;
+    private final SuspiciousActivityDetectionService suspiciousActivityDetectionService;
+    private final ClientThrottlingService clientThrottlingService;
     private final PasswordEncoder passwordEncoder;
     private final String dummyPasswordHash;
-    private final SuspiciousActivityDetectionService suspiciousActivityDetectionService;
 
     public AuthenticationService(
             LabUserRepository labUserRepository,
@@ -42,6 +45,7 @@ public class AuthenticationService {
             AccountLockoutService accountLockoutService,
             ProgressiveDelayService progressiveDelayService,
             SuspiciousActivityDetectionService suspiciousActivityDetectionService,
+            ClientThrottlingService clientThrottlingService,
             PasswordEncoder passwordEncoder
     ) {
         this.labUserRepository = labUserRepository;
@@ -51,33 +55,57 @@ public class AuthenticationService {
         this.rateLimitService = rateLimitService;
         this.accountLockoutService = accountLockoutService;
         this.progressiveDelayService = progressiveDelayService;
+        this.suspiciousActivityDetectionService =
+                suspiciousActivityDetectionService;
         this.passwordEncoder = passwordEncoder;
         this.dummyPasswordHash =
                 passwordEncoder.encode("hatchlab-dummy-password");
-        this.suspiciousActivityDetectionService =
-                suspiciousActivityDetectionService;
+        this.clientThrottlingService = clientThrottlingService;
     }
 
     @Transactional
-    public LoginResponse authenticate(LoginRequest request) {
+    public LoginResponse authenticate(
+            LoginRequest request,
+            String clientIdentifier
+    ) {
         return authenticate(
                 request,
-                AuthenticationSource.LOCAL_AUTH_LAB
+                AuthenticationSource.LOCAL_AUTH_LAB,
+                clientIdentifier,
+                null
         );
     }
 
     @Transactional
     public LoginResponse authenticate(
             LoginRequest request,
-            AuthenticationSource source
+            AuthenticationSource source,
+            String clientIdentifier,
+            UUID attackSessionId
     ) {
         Instant startedAt = Instant.now();
         String normalizedUsername = request.username().trim();
+        String normalizedClientIdentifier =
+                normalizeClientIdentifier(clientIdentifier);
 
         if (rateLimitService.isBlocked(normalizedUsername)) {
             return handleRateLimitBlock(
                     normalizedUsername,
                     source,
+                    normalizedClientIdentifier,
+                    attackSessionId,
+                    startedAt
+            );
+        }
+
+        if (clientThrottlingService.isBlocked(
+                normalizedClientIdentifier
+        )) {
+            return handleClientThrottleBlock(
+                    normalizedUsername,
+                    source,
+                    normalizedClientIdentifier,
+                    attackSessionId,
                     startedAt
             );
         }
@@ -97,6 +125,8 @@ public class AuthenticationService {
         saveAttempt(
                 normalizedUsername,
                 source,
+                normalizedClientIdentifier,
+                attackSessionId,
                 outcome,
                 startedAt
         );
@@ -105,7 +135,7 @@ public class AuthenticationService {
                 normalizedUsername,
                 source,
                 outcome,
-                null
+                attackSessionId
         );
 
         if (outcome == AuthenticationOutcome.FAILURE) {
@@ -118,7 +148,7 @@ public class AuthenticationService {
                 securityEventService.recordAccountLocked(
                         normalizedUsername,
                         source,
-                        null
+                        attackSessionId
                 );
             }
 
@@ -165,24 +195,68 @@ public class AuthenticationService {
     private LoginResponse handleRateLimitBlock(
             String username,
             AuthenticationSource source,
+            String clientIdentifier,
+            UUID attackSessionId,
             Instant startedAt
     ) {
         AuthenticationOutcome outcome =
                 AuthenticationOutcome.BLOCKED;
 
-        saveAttempt(username, source, outcome, startedAt);
+        saveAttempt(
+                username,
+                source,
+                clientIdentifier,
+                attackSessionId,
+                outcome,
+                startedAt
+        );
 
         securityEventService.recordAuthentication(
                 username,
                 source,
                 outcome,
-                null
+                attackSessionId
         );
 
         securityEventService.recordRateLimitTriggered(
                 username,
                 source,
-                null
+                attackSessionId
+        );
+
+        return LoginResponse.blocked();
+    }
+
+    private LoginResponse handleClientThrottleBlock(
+            String username,
+            AuthenticationSource source,
+            String clientIdentifier,
+            UUID attackSessionId,
+            Instant startedAt
+    ) {
+        AuthenticationOutcome outcome =
+                AuthenticationOutcome.BLOCKED;
+
+        saveAttempt(
+                username,
+                source,
+                clientIdentifier,
+                attackSessionId,
+                outcome,
+                startedAt
+        );
+
+        securityEventService.recordAuthentication(
+                username,
+                source,
+                outcome,
+                attackSessionId
+        );
+
+        securityEventService.recordClientThrottled(
+                username,
+                source,
+                attackSessionId
         );
 
         return LoginResponse.blocked();
@@ -191,6 +265,8 @@ public class AuthenticationService {
     private void saveAttempt(
             String username,
             AuthenticationSource source,
+            String clientIdentifier,
+            UUID attackSessionId,
             AuthenticationOutcome outcome,
             Instant startedAt
     ) {
@@ -199,7 +275,8 @@ public class AuthenticationService {
                 .toMillis();
 
         AuthenticationAttempt attempt = new AuthenticationAttempt(
-                null,
+                attackSessionId,
+                clientIdentifier,
                 username,
                 source,
                 outcome,
@@ -208,6 +285,22 @@ public class AuthenticationService {
         );
 
         authenticationAttemptRepository.save(attempt);
+    }
+
+    private String normalizeClientIdentifier(
+            String clientIdentifier
+    ) {
+        if (clientIdentifier == null || clientIdentifier.isBlank()) {
+            return "LOCAL_UNKNOWN";
+        }
+
+        String normalized = clientIdentifier.trim();
+
+        if (normalized.length() <= 100) {
+            return normalized;
+        }
+
+        return normalized.substring(0, 100);
     }
 
     private LoginResponse toResponse(

@@ -165,4 +165,27 @@ public class SecurityEventService {
             );
         };
     }
+
+    public void recordClientThrottled(
+            String username,
+            AuthenticationSource source,
+            UUID attackSessionId
+    ) {
+        if (!isLoggingEnabled()) {
+            return;
+        }
+
+        SecurityEvent event = new SecurityEvent(
+                Instant.now(),
+                SecurityEventType.CLIENT_THROTTLED,
+                SecurityEventSeverity.HIGH,
+                source,
+                username,
+                "Authentication client was throttled after repeated failures.",
+                attackSessionId
+        );
+
+        securityEventRepository.save(event);
+    }
+
 }

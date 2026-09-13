@@ -26,6 +26,9 @@ public class AuthenticationAttempt {
     @Column(name = "attack_session_id")
     private UUID attackSessionId;
 
+    @Column(name = "client_identifier", nullable = false, length = 100)
+    private String clientIdentifier;
+
     @Column(nullable = false, length = 100)
     private String username;
 
@@ -49,6 +52,7 @@ public class AuthenticationAttempt {
 
     public AuthenticationAttempt(
             UUID attackSessionId,
+            String clientIdentifier,
             String username,
             AuthenticationSource source,
             AuthenticationOutcome outcome,
@@ -56,6 +60,7 @@ public class AuthenticationAttempt {
             long responseTimeMs
     ) {
         this.attackSessionId = attackSessionId;
+        this.clientIdentifier = Objects.requireNonNull(clientIdentifier);
         this.username = Objects.requireNonNull(username);
         this.source = Objects.requireNonNull(source);
         this.outcome = Objects.requireNonNull(outcome);
@@ -69,6 +74,10 @@ public class AuthenticationAttempt {
 
     public UUID getAttackSessionId() {
         return attackSessionId;
+    }
+
+    public String getClientIdentifier() {
+        return clientIdentifier;
     }
 
     public String getUsername() {
