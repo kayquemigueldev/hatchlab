@@ -7,6 +7,7 @@ import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.authenticationattempt.AuthenticationAttempt;
 import com.hatchlab.authenticationattempt.AuthenticationAttemptRepository;
 import com.hatchlab.defense.AccountLockoutService;
+import com.hatchlab.defense.ProgressiveDelayService;
 import com.hatchlab.defense.RateLimitService;
 import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.user.LabUser;
@@ -27,6 +28,7 @@ public class AuthenticationService {
     private final SecurityEventService securityEventService;
     private final RateLimitService rateLimitService;
     private final AccountLockoutService accountLockoutService;
+    private final ProgressiveDelayService progressiveDelayService;
     private final PasswordEncoder passwordEncoder;
     private final String dummyPasswordHash;
 
@@ -36,6 +38,7 @@ public class AuthenticationService {
             SecurityEventService securityEventService,
             RateLimitService rateLimitService,
             AccountLockoutService accountLockoutService,
+            ProgressiveDelayService progressiveDelayService,
             PasswordEncoder passwordEncoder
     ) {
         this.labUserRepository = labUserRepository;
@@ -44,6 +47,7 @@ public class AuthenticationService {
         this.securityEventService = securityEventService;
         this.rateLimitService = rateLimitService;
         this.accountLockoutService = accountLockoutService;
+        this.progressiveDelayService = progressiveDelayService;
         this.passwordEncoder = passwordEncoder;
         this.dummyPasswordHash =
                 passwordEncoder.encode("hatchlab-dummy-password");
@@ -72,6 +76,8 @@ public class AuthenticationService {
                     startedAt
             );
         }
+
+        progressiveDelayService.applyDelay(normalizedUsername);
 
         Optional<LabUser> optionalUser =
                 labUserRepository.findByUsernameIgnoreCase(
