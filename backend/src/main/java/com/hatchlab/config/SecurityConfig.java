@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/security-events/**").permitAll()
+                        .requestMatchers("/api/v1/defense-config/**").permitAll()
                         .anyRequest().denyAll()
                 );
 
