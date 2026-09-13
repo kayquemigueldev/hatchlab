@@ -6,6 +6,7 @@ import com.hatchlab.authentication.domain.AuthenticationOutcome;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.authenticationattempt.AuthenticationAttempt;
 import com.hatchlab.authenticationattempt.AuthenticationAttemptRepository;
+import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.user.LabUser;
 import com.hatchlab.user.LabUserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,16 +22,19 @@ public class AuthenticationService {
 
     private final LabUserRepository labUserRepository;
     private final AuthenticationAttemptRepository authenticationAttemptRepository;
+    private final SecurityEventService securityEventService;
     private final PasswordEncoder passwordEncoder;
     private final String dummyPasswordHash;
 
     public AuthenticationService(
             LabUserRepository labUserRepository,
             AuthenticationAttemptRepository authenticationAttemptRepository,
+            SecurityEventService securityEventService,
             PasswordEncoder passwordEncoder
     ) {
         this.labUserRepository = labUserRepository;
         this.authenticationAttemptRepository = authenticationAttemptRepository;
+        this.securityEventService = securityEventService;
         this.passwordEncoder = passwordEncoder;
         this.dummyPasswordHash =
                 passwordEncoder.encode("hatchlab-dummy-password");
@@ -73,6 +77,13 @@ public class AuthenticationService {
         }
 
         saveAttempt(normalizedUsername, source, outcome, startedAt);
+
+        securityEventService.recordAuthentication(
+                normalizedUsername,
+                source,
+                outcome,
+                null
+        );
 
         return switch (outcome) {
             case SUCCESS -> LoginResponse.success();
