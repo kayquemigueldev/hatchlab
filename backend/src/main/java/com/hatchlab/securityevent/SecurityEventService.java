@@ -122,4 +122,22 @@ public class SecurityEventService {
         securityEventRepository.save(event);
     }
 
+    public void recordSuspiciousActivity(
+            String username,
+            AuthenticationSource source,
+            UUID attackSessionId
+    ) {
+        SecurityEvent event = new SecurityEvent(
+                Instant.now(),
+                SecurityEventType.SUSPICIOUS_ACTIVITY,
+                SecurityEventSeverity.HIGH,
+                source,
+                username,
+                "Repeated authentication failures were detected.",
+                attackSessionId
+        );
+
+        securityEventRepository.save(event);
+    }
+
 }

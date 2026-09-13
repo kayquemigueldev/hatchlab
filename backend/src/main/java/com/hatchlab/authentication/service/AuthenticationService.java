@@ -9,6 +9,7 @@ import com.hatchlab.authenticationattempt.AuthenticationAttemptRepository;
 import com.hatchlab.defense.AccountLockoutService;
 import com.hatchlab.defense.ProgressiveDelayService;
 import com.hatchlab.defense.RateLimitService;
+import com.hatchlab.defense.SuspiciousActivityDetectionService;
 import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.user.LabUser;
 import com.hatchlab.user.LabUserRepository;
@@ -31,6 +32,7 @@ public class AuthenticationService {
     private final ProgressiveDelayService progressiveDelayService;
     private final PasswordEncoder passwordEncoder;
     private final String dummyPasswordHash;
+    private final SuspiciousActivityDetectionService suspiciousActivityDetectionService;
 
     public AuthenticationService(
             LabUserRepository labUserRepository,
@@ -39,6 +41,7 @@ public class AuthenticationService {
             RateLimitService rateLimitService,
             AccountLockoutService accountLockoutService,
             ProgressiveDelayService progressiveDelayService,
+            SuspiciousActivityDetectionService suspiciousActivityDetectionService,
             PasswordEncoder passwordEncoder
     ) {
         this.labUserRepository = labUserRepository;
@@ -51,6 +54,8 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
         this.dummyPasswordHash =
                 passwordEncoder.encode("hatchlab-dummy-password");
+        this.suspiciousActivityDetectionService =
+                suspiciousActivityDetectionService;
     }
 
     @Transactional
@@ -116,6 +121,11 @@ public class AuthenticationService {
                         null
                 );
             }
+
+            suspiciousActivityDetectionService.analyze(
+                    normalizedUsername,
+                    source
+            );
         }
 
         return toResponse(outcome);
