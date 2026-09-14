@@ -5,7 +5,7 @@ HATCHLAB is a controlled local laboratory for studying authentication attacks, d
 
 ## Project status
 
-🚧 Under development
+---   Under development ---
 
 ## Core concept
 
