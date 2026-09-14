@@ -121,7 +121,7 @@ class SimulationSessionServiceTest {
                 .thenReturn(Optional.of(activeSession));
 
         assertThatThrownBy(() -> service.createSession(request))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(SimulationAlreadyRunningException.class)
                 .hasMessage(
                         "Another attack simulation is already running."
                 );

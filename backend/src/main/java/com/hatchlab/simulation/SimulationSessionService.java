@@ -64,9 +64,7 @@ public class SimulationSessionService {
                 .isPresent();
 
         if (sessionIsRunning) {
-            throw new IllegalStateException(
-                    "Another attack simulation is already running."
-            );
+            throw new SimulationAlreadyRunningException();
         }
     }
 

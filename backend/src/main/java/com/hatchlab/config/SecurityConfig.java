@@ -27,8 +27,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/security-events/**").permitAll()
                         .requestMatchers("/api/v1/defense-config/**").permitAll()
-                        .anyRequest().denyAll()
-                );
+                        .requestMatchers("/api/v1/simulations/**").permitAll()
+                        .anyRequest().denyAll()                );
 
         return http.build();
     }

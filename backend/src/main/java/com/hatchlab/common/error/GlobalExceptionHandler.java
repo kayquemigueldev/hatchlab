@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import com.hatchlab.simulation.SimulationAlreadyRunningException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -100,6 +101,23 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(response);
+    }
+
+    @ExceptionHandler(SimulationAlreadyRunningException.class)
+    public ResponseEntity<ApiErrorResponse> handleSimulationAlreadyRunning(
+            SimulationAlreadyRunningException exception,
+            HttpServletRequest request
+    ) {
+        ApiErrorResponse response = createResponse(
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                request.getRequestURI(),
+                Map.of()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(response);
     }
 
