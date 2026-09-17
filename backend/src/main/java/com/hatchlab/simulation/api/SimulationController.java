@@ -1,7 +1,7 @@
 package com.hatchlab.simulation.api;
 
 import com.hatchlab.attacksession.AttackSession;
-import com.hatchlab.simulation.SimulationSessionService;
+import com.hatchlab.simulation.SimulationCoordinatorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/simulations")
 public class SimulationController {
 
-    private final SimulationSessionService simulationSessionService;
+    private final SimulationCoordinatorService coordinatorService;
 
     public SimulationController(
-            SimulationSessionService simulationSessionService
+            SimulationCoordinatorService coordinatorService
     ) {
-        this.simulationSessionService = simulationSessionService;
+        this.coordinatorService = coordinatorService;
     }
 
     @PostMapping
@@ -28,7 +28,7 @@ public class SimulationController {
             @Valid @RequestBody StartSimulationRequest request
     ) {
         AttackSession session =
-                simulationSessionService.createSession(request);
+                coordinatorService.startSimulation(request);
 
         return SimulationSessionResponse.from(session);
     }
