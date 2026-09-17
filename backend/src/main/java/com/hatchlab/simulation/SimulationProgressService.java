@@ -24,11 +24,7 @@ public class SimulationProgressService {
             UUID sessionId,
             AuthenticationOutcome outcome
     ) {
-        AttackSession session = attackSessionRepository
-                .findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Attack session was not found."
-                ));
+        AttackSession session = findSession(sessionId);
 
         session.recordAttempt(outcome);
 
@@ -39,6 +35,34 @@ public class SimulationProgressService {
         }
 
         return attackSessionRepository.saveAndFlush(session);
+    }
+
+    @Transactional
+    public AttackSession stopSession(UUID sessionId) {
+        AttackSession session = findSession(sessionId);
+
+        if (session.isRunning()) {
+            session.stop();
+        }
+
+        return attackSessionRepository.saveAndFlush(session);
+    }
+
+    @Transactional
+    public AttackSession markFailed(UUID sessionId) {
+        AttackSession session = findSession(sessionId);
+
+        session.markFailed();
+
+        return attackSessionRepository.saveAndFlush(session);
+    }
+
+    private AttackSession findSession(UUID sessionId) {
+        return attackSessionRepository
+                .findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Attack session was not found."
+                ));
     }
 
     private void completeIfLimitWasReached(
