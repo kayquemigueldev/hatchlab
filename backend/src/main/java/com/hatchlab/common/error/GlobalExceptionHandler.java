@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import com.hatchlab.simulation.SimulationAlreadyRunningException;
+import com.hatchlab.simulation.SimulationNotFoundException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -101,6 +102,23 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(response);
+    }
+
+    @ExceptionHandler(SimulationNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleSimulationNotFound(
+            SimulationNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        ApiErrorResponse response = createResponse(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage(),
+                request.getRequestURI(),
+                Map.of()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
 
