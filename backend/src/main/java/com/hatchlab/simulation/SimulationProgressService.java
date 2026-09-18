@@ -60,9 +60,9 @@ public class SimulationProgressService {
     private AttackSession findSession(UUID sessionId) {
         return attackSessionRepository
                 .findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Attack session was not found."
-                ));
+                .orElseThrow(() ->
+                        new SimulationNotFoundException(sessionId)
+                );
     }
 
     private void completeIfLimitWasReached(

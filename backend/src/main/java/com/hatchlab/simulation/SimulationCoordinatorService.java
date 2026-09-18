@@ -7,7 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 
 @Service
@@ -22,6 +26,9 @@ public class SimulationCoordinatorService {
     private final SimulationEngine simulationEngine;
     private final SimulationProgressService progressService;
     private final ExecutorService simulationExecutor;
+
+    private final ConcurrentMap<UUID, FutureTask<Void>> runningTasks =
+            new ConcurrentHashMap<>();
 
     public SimulationCoordinatorService(
             SimulationSessionService sessionService,
@@ -42,11 +49,17 @@ public class SimulationCoordinatorService {
         AttackSession session =
                 sessionService.createSession(request);
 
+        FutureTask<Void> task = new FutureTask<>(() -> {
+            executeSafely(session, request);
+            return null;
+        });
+
+        runningTasks.put(session.getId(), task);
+
         try {
-            simulationExecutor.execute(() ->
-                    executeSafely(session, request)
-            );
+            simulationExecutor.execute(task);
         } catch (RejectedExecutionException exception) {
+            runningTasks.remove(session.getId(), task);
             progressService.markFailed(session.getId());
 
             throw new IllegalStateException(
@@ -56,6 +69,16 @@ public class SimulationCoordinatorService {
         }
 
         return session;
+    }
+
+    public AttackSession stopSimulation(UUID sessionId) {
+        FutureTask<Void> task = runningTasks.remove(sessionId);
+
+        if (task != null) {
+            task.cancel(true);
+        }
+
+        return progressService.stopSession(sessionId);
     }
 
     private void executeSafely(
@@ -73,6 +96,8 @@ public class SimulationCoordinatorService {
                     session.getId(),
                     exception
             );
+        } finally {
+            runningTasks.remove(session.getId());
         }
     }
 }

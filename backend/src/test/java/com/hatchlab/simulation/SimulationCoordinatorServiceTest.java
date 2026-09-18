@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,6 +97,49 @@ class SimulationCoordinatorServiceTest {
                 );
 
         verify(progressService).markFailed(sessionId);
+    }
+
+    @Test
+    void shouldCancelScheduledTaskAndStopSession() {
+        UUID sessionId = UUID.randomUUID();
+        StartSimulationRequest request = createRequest();
+
+        AttackSession runningSession =
+                mock(AttackSession.class);
+
+        AttackSession stoppedSession =
+                mock(AttackSession.class);
+
+        when(runningSession.getId()).thenReturn(sessionId);
+
+        when(sessionService.createSession(request))
+                .thenReturn(runningSession);
+
+        when(progressService.stopSession(sessionId))
+                .thenReturn(stoppedSession);
+
+        coordinatorService.startSimulation(request);
+
+        ArgumentCaptor<Runnable> taskCaptor =
+                ArgumentCaptor.forClass(Runnable.class);
+
+        verify(simulationExecutor)
+                .execute(taskCaptor.capture());
+
+        AttackSession result =
+                coordinatorService.stopSimulation(sessionId);
+
+        assertThat(result).isSameAs(stoppedSession);
+
+        assertThat(taskCaptor.getValue())
+                .isInstanceOf(Future.class);
+
+        Future<?> scheduledTask =
+                (Future<?>) taskCaptor.getValue();
+
+        assertThat(scheduledTask.isCancelled()).isTrue();
+
+        verifyNoInteractions(simulationEngine);
     }
 
     private StartSimulationRequest createRequest() {

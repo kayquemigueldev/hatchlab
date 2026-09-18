@@ -56,6 +56,8 @@ public class SimulationEngine {
         );
 
         for (String candidate : candidates) {
+            ensureExecutionWasNotInterrupted();
+
             LoginRequest loginRequest = new LoginRequest(
                     request.username(),
                     candidate
@@ -69,6 +71,8 @@ public class SimulationEngine {
                             sessionId
                     );
 
+            ensureExecutionWasNotInterrupted();
+
             AttackSession updatedSession =
                     progressService.recordOutcome(
                             sessionId,
@@ -80,6 +84,15 @@ public class SimulationEngine {
             }
 
             Thread.sleep(request.delayMs());
+        }
+    }
+
+    private void ensureExecutionWasNotInterrupted()
+            throws InterruptedException {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException(
+                    "Attack simulation was interrupted."
+            );
         }
     }
 }

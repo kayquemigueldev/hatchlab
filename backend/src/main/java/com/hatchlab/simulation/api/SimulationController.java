@@ -49,4 +49,14 @@ public class SimulationController {
 
         return SimulationSessionResponse.from(session);
     }
+
+    @PostMapping("/{sessionId}/stop")
+    public SimulationSessionResponse stopSimulation(
+            @PathVariable UUID sessionId
+    ) {
+        AttackSession session =
+                coordinatorService.stopSimulation(sessionId);
+
+        return SimulationSessionResponse.from(session);
+    }
 }
