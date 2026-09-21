@@ -1,11 +1,13 @@
 package com.hatchlab.simulation;
 
 import com.hatchlab.attacksession.AttackSession;
+import com.hatchlab.attacksession.AttackSessionStatus;
 import com.hatchlab.authentication.api.LoginRequest;
 import com.hatchlab.authentication.api.LoginResponse;
 import com.hatchlab.authentication.domain.AuthenticationOutcome;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.authentication.service.AuthenticationService;
+import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.simulation.api.StartSimulationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,7 @@ class SimulationEngineTest {
     private LabWordlistService labWordlistService;
     private AuthenticationService authenticationService;
     private SimulationProgressService progressService;
+    private SecurityEventService securityEventService;
     private SimulationEngine engine;
 
     @BeforeEach
@@ -35,20 +38,20 @@ class SimulationEngineTest {
         labWordlistService = mock(LabWordlistService.class);
         authenticationService = mock(AuthenticationService.class);
         progressService = mock(SimulationProgressService.class);
+        securityEventService = mock(SecurityEventService.class);
 
         engine = new SimulationEngine(
                 labWordlistService,
                 authenticationService,
-                progressService
+                progressService,
+                securityEventService
         );
     }
 
     @Test
     void shouldStopAfterSuccessfulAuthentication() {
         UUID sessionId = UUID.randomUUID();
-
-        StartSimulationRequest request =
-                createRequest(0);
+        StartSimulationRequest request = createRequest(0);
 
         when(labWordlistService.load(
                 LabWordlistType.LAB_DEFAULT,
@@ -69,15 +72,12 @@ class SimulationEngineTest {
                 LoginResponse.success()
         );
 
-        AttackSession runningSession = runningSession();
-        AttackSession successfulSession = successfulSession();
-
         when(progressService.recordOutcome(
                 eq(sessionId),
                 any(AuthenticationOutcome.class)
         )).thenReturn(
-                runningSession,
-                successfulSession
+                runningSession(),
+                successfulSession()
         );
 
         engine.execute(sessionId, request);
@@ -99,14 +99,19 @@ class SimulationEngineTest {
                         "wrong-password",
                         "correct-password"
                 );
+
+        verify(securityEventService)
+                .recordSimulationCompleted(
+                        "admin",
+                        sessionId,
+                        AttackSessionStatus.SUCCESS
+                );
     }
 
     @Test
     void shouldStopAfterBlockedAuthentication() {
         UUID sessionId = UUID.randomUUID();
-
-        StartSimulationRequest request =
-                createRequest(0);
+        StartSimulationRequest request = createRequest(0);
 
         when(labWordlistService.load(
                 LabWordlistType.LAB_DEFAULT,
@@ -137,14 +142,19 @@ class SimulationEngineTest {
                         eq("HATCHLAB_SIMULATOR"),
                         eq(sessionId)
                 );
+
+        verify(securityEventService)
+                .recordSimulationCompleted(
+                        "admin",
+                        sessionId,
+                        AttackSessionStatus.BLOCKED
+                );
     }
 
     @Test
     void shouldMarkSessionAsFailedWhenExecutionThrows() {
         UUID sessionId = UUID.randomUUID();
-
-        StartSimulationRequest request =
-                createRequest(0);
+        StartSimulationRequest request = createRequest(0);
 
         when(labWordlistService.load(
                 LabWordlistType.LAB_DEFAULT,
@@ -160,23 +170,34 @@ class SimulationEngineTest {
                 "Unexpected authentication failure."
         ));
 
+        AttackSession failedSession = mock(AttackSession.class);
+
+        when(failedSession.getStatus())
+                .thenReturn(AttackSessionStatus.FAILED);
+
+        when(progressService.markFailed(sessionId))
+                .thenReturn(failedSession);
+
         assertThatThrownBy(() ->
                 engine.execute(sessionId, request)
         )
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage(
-                        "Unexpected authentication failure."
-                );
+                .hasMessage("Unexpected authentication failure.");
 
         verify(progressService).markFailed(sessionId);
+
+        verify(securityEventService)
+                .recordSimulationCompleted(
+                        "admin",
+                        sessionId,
+                        AttackSessionStatus.FAILED
+                );
     }
 
     @Test
     void shouldStopSessionWhenThreadIsInterrupted() {
         UUID sessionId = UUID.randomUUID();
-
-        StartSimulationRequest request =
-                createRequest(100);
+        StartSimulationRequest request = createRequest(100);
 
         when(labWordlistService.load(
                 LabWordlistType.LAB_DEFAULT,

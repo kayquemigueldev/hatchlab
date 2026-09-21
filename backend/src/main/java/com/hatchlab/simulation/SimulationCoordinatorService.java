@@ -1,6 +1,8 @@
 package com.hatchlab.simulation;
 
 import com.hatchlab.attacksession.AttackSession;
+import com.hatchlab.attacksession.AttackSessionStatus;
+import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.simulation.api.StartSimulationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ public class SimulationCoordinatorService {
     private final SimulationSessionService sessionService;
     private final SimulationEngine simulationEngine;
     private final SimulationProgressService progressService;
+    private final SecurityEventService securityEventService;
     private final ExecutorService simulationExecutor;
 
     private final ConcurrentMap<UUID, FutureTask<Void>> runningTasks =
@@ -34,12 +37,14 @@ public class SimulationCoordinatorService {
             SimulationSessionService sessionService,
             SimulationEngine simulationEngine,
             SimulationProgressService progressService,
+            SecurityEventService securityEventService,
             @Qualifier("simulationExecutor")
             ExecutorService simulationExecutor
     ) {
         this.sessionService = sessionService;
         this.simulationEngine = simulationEngine;
         this.progressService = progressService;
+        this.securityEventService = securityEventService;
         this.simulationExecutor = simulationExecutor;
     }
 
@@ -48,6 +53,11 @@ public class SimulationCoordinatorService {
     ) {
         AttackSession session =
                 sessionService.createSession(request);
+
+        securityEventService.recordSimulationStarted(
+                request.username(),
+                session.getId()
+        );
 
         FutureTask<Void> task = new FutureTask<>(() -> {
             executeSafely(session, request);
@@ -60,7 +70,15 @@ public class SimulationCoordinatorService {
             simulationExecutor.execute(task);
         } catch (RejectedExecutionException exception) {
             runningTasks.remove(session.getId(), task);
-            progressService.markFailed(session.getId());
+
+            AttackSession failedSession =
+                    progressService.markFailed(session.getId());
+
+            securityEventService.recordSimulationCompleted(
+                    request.username(),
+                    session.getId(),
+                    failedSession.getStatus()
+            );
 
             throw new IllegalStateException(
                     "Simulation executor is not available.",
@@ -78,7 +96,19 @@ public class SimulationCoordinatorService {
             task.cancel(true);
         }
 
-        return progressService.stopSession(sessionId);
+        AttackSession session =
+                progressService.stopSession(sessionId);
+
+        if (task != null
+                && session.getStatus()
+                == AttackSessionStatus.STOPPED) {
+            securityEventService.recordSimulationStopped(
+                    null,
+                    sessionId
+            );
+        }
+
+        return session;
     }
 
     private void executeSafely(

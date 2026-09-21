@@ -1,6 +1,8 @@
 package com.hatchlab.simulation;
 
 import com.hatchlab.attacksession.AttackSession;
+import com.hatchlab.attacksession.AttackSessionStatus;
+import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.simulation.api.StartSimulationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,7 @@ class SimulationCoordinatorServiceTest {
     private SimulationEngine simulationEngine;
     private SimulationProgressService progressService;
     private ExecutorService simulationExecutor;
+    private SecurityEventService securityEventService;
     private SimulationCoordinatorService coordinatorService;
 
     @BeforeEach
@@ -34,11 +37,13 @@ class SimulationCoordinatorServiceTest {
         simulationEngine = mock(SimulationEngine.class);
         progressService = mock(SimulationProgressService.class);
         simulationExecutor = mock(ExecutorService.class);
+        securityEventService = mock(SecurityEventService.class);
 
         coordinatorService = new SimulationCoordinatorService(
                 sessionService,
                 simulationEngine,
                 progressService,
+                securityEventService,
                 simulationExecutor
         );
     }
@@ -58,6 +63,12 @@ class SimulationCoordinatorServiceTest {
                 coordinatorService.startSimulation(request);
 
         assertThat(result).isSameAs(session);
+
+        verify(securityEventService)
+                .recordSimulationStarted(
+                        "admin",
+                        sessionId
+                );
 
         ArgumentCaptor<Runnable> taskCaptor =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -84,6 +95,14 @@ class SimulationCoordinatorServiceTest {
         when(sessionService.createSession(request))
                 .thenReturn(session);
 
+        AttackSession failedSession = mock(AttackSession.class);
+
+        when(failedSession.getStatus())
+                .thenReturn(AttackSessionStatus.FAILED);
+
+        when(progressService.markFailed(sessionId))
+                .thenReturn(failedSession);
+
         doThrow(new RejectedExecutionException(
                 "Executor is shutting down."
         )).when(simulationExecutor).execute(any(Runnable.class));
@@ -97,6 +116,13 @@ class SimulationCoordinatorServiceTest {
                 );
 
         verify(progressService).markFailed(sessionId);
+
+        verify(securityEventService)
+                .recordSimulationCompleted(
+                        "admin",
+                        sessionId,
+                        AttackSessionStatus.FAILED
+                );
     }
 
     @Test
@@ -104,16 +130,16 @@ class SimulationCoordinatorServiceTest {
         UUID sessionId = UUID.randomUUID();
         StartSimulationRequest request = createRequest();
 
-        AttackSession runningSession =
-                mock(AttackSession.class);
-
-        AttackSession stoppedSession =
-                mock(AttackSession.class);
+        AttackSession runningSession = mock(AttackSession.class);
+        AttackSession stoppedSession = mock(AttackSession.class);
 
         when(runningSession.getId()).thenReturn(sessionId);
 
         when(sessionService.createSession(request))
                 .thenReturn(runningSession);
+
+        when(stoppedSession.getStatus())
+                .thenReturn(AttackSessionStatus.STOPPED);
 
         when(progressService.stopSession(sessionId))
                 .thenReturn(stoppedSession);
@@ -140,6 +166,12 @@ class SimulationCoordinatorServiceTest {
         assertThat(scheduledTask.isCancelled()).isTrue();
 
         verifyNoInteractions(simulationEngine);
+
+        verify(securityEventService)
+                .recordSimulationStopped(
+                        null,
+                        sessionId
+                );
     }
 
     private StartSimulationRequest createRequest() {

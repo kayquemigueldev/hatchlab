@@ -5,6 +5,7 @@ import com.hatchlab.authentication.api.LoginRequest;
 import com.hatchlab.authentication.api.LoginResponse;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.authentication.service.AuthenticationService;
+import com.hatchlab.securityevent.SecurityEventService;
 import com.hatchlab.simulation.api.StartSimulationRequest;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +21,18 @@ public class SimulationEngine {
     private final LabWordlistService labWordlistService;
     private final AuthenticationService authenticationService;
     private final SimulationProgressService progressService;
+    private final SecurityEventService securityEventService;
 
     public SimulationEngine(
             LabWordlistService labWordlistService,
             AuthenticationService authenticationService,
-            SimulationProgressService progressService
+            SimulationProgressService progressService,
+            SecurityEventService securityEventService
     ) {
         this.labWordlistService = labWordlistService;
         this.authenticationService = authenticationService;
         this.progressService = progressService;
+        this.securityEventService = securityEventService;
     }
 
     public void execute(
@@ -41,7 +45,15 @@ public class SimulationEngine {
             Thread.currentThread().interrupt();
             progressService.stopSession(sessionId);
         } catch (RuntimeException exception) {
-            progressService.markFailed(sessionId);
+            AttackSession failedSession =
+                    progressService.markFailed(sessionId);
+
+            securityEventService.recordSimulationCompleted(
+                    request.username(),
+                    sessionId,
+                    failedSession.getStatus()
+            );
+
             throw exception;
         }
     }
@@ -80,6 +92,12 @@ public class SimulationEngine {
                     );
 
             if (!updatedSession.isRunning()) {
+                securityEventService.recordSimulationCompleted(
+                        request.username(),
+                        sessionId,
+                        updatedSession.getStatus()
+                );
+
                 return;
             }
 

@@ -3,6 +3,7 @@ package com.hatchlab.securityevent;
 import com.hatchlab.authentication.domain.AuthenticationOutcome;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.defense.SecurityConfigurationService;
+import com.hatchlab.attacksession.AttackSessionStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -182,6 +183,95 @@ public class SecurityEventService {
                 source,
                 username,
                 "Authentication client was throttled after repeated failures.",
+                attackSessionId
+        );
+
+        securityEventRepository.save(event);
+    }
+
+    public void recordSimulationStarted(
+            String username,
+            UUID attackSessionId
+    ) {
+        recordSimulationEvent(
+                SecurityEventType.SIMULATION_STARTED,
+                SecurityEventSeverity.INFO,
+                username,
+                "Controlled attack simulation started.",
+                attackSessionId
+        );
+    }
+
+    public void recordSimulationStopped(
+            String username,
+            UUID attackSessionId
+    ) {
+        recordSimulationEvent(
+                SecurityEventType.SIMULATION_STOPPED,
+                SecurityEventSeverity.INFO,
+                username,
+                "Controlled attack simulation was stopped.",
+                attackSessionId
+        );
+    }
+
+    public void recordSimulationCompleted(
+            String username,
+            UUID attackSessionId,
+            AttackSessionStatus status
+    ) {
+        SecurityEventSeverity severity = switch (status) {
+            case BLOCKED, FAILED -> SecurityEventSeverity.HIGH;
+            default -> SecurityEventSeverity.INFO;
+        };
+
+        String description = switch (status) {
+            case SUCCESS ->
+                    "Simulation completed after successful authentication.";
+
+            case BLOCKED ->
+                    "Simulation was blocked by an enabled security control.";
+
+            case COMPLETED ->
+                    "Simulation exhausted all requested authentication attempts.";
+
+            case FAILED ->
+                    "Simulation failed due to an internal execution error.";
+
+            case STOPPED ->
+                    "Simulation finished after a manual stop request.";
+
+            case IDLE, RUNNING ->
+                    "Simulation reported a non-terminal execution state.";
+        };
+
+        recordSimulationEvent(
+                SecurityEventType.SIMULATION_COMPLETED,
+                severity,
+                username,
+                description,
+                attackSessionId
+        );
+    }
+
+    private void recordSimulationEvent(
+            SecurityEventType eventType,
+            SecurityEventSeverity severity,
+            String username,
+            String description,
+            UUID attackSessionId
+    ) {
+        if (!isLoggingEnabled()) {
+            return;
+        }
+
+        SecurityEvent event = new SecurityEvent(
+                Instant.now(),
+                eventType,
+                severity,
+                AuthenticationSource.ATTACK_SIMULATION,
+                username,
+                description,
                 attackSessionId
         );
 
