@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import com.hatchlab.simulation.SimulationAlreadyRunningException;
 import com.hatchlab.simulation.SimulationNotFoundException;
+import com.hatchlab.labreset.LabResetConflictException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -125,6 +126,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SimulationAlreadyRunningException.class)
     public ResponseEntity<ApiErrorResponse> handleSimulationAlreadyRunning(
             SimulationAlreadyRunningException exception,
+            HttpServletRequest request
+    ) {
+        ApiErrorResponse response = createResponse(
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                request.getRequestURI(),
+                Map.of()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(LabResetConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleLabResetConflict(
+            LabResetConflictException exception,
             HttpServletRequest request
     ) {
         ApiErrorResponse response = createResponse(

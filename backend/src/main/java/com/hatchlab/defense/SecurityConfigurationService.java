@@ -45,6 +45,26 @@ public class SecurityConfigurationService {
         return DefenseConfigurationResponse.from(saved);
     }
 
+    @Transactional
+    public DefenseConfigurationResponse resetConfiguration() {
+        SecurityConfiguration configuration =
+                getCurrentConfiguration();
+
+        configuration.update(
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+        );
+
+        SecurityConfiguration saved =
+                repository.saveAndFlush(configuration);
+
+        return DefenseConfigurationResponse.from(saved);
+    }
+
     @Transactional(readOnly = true)
     public SecurityConfiguration getCurrentConfiguration() {
         return repository

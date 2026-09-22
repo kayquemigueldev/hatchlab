@@ -82,6 +82,7 @@ public class SecurityConfiguration {
                 suspiciousLoginDetectionEnabled;
         this.securityEventLoggingEnabled =
                 securityEventLoggingEnabled;
+        this.updatedAt = Instant.now();
     }
 
     @PrePersist
