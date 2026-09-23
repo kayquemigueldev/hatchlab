@@ -7,6 +7,7 @@ import './App.css'
 import { AppLayout } from './app/layout/AppLayout'
 import { DashboardPage } from './features/dashboard/DashboardPage'
 import { PlaceholderPage } from './shared/components/PlaceholderPage'
+import { DefenseLabPage } from './features/defenses/DefenseLabPage'
 
 function App() {
   return (
@@ -28,16 +29,10 @@ function App() {
               }
           />
 
-          <Route
-              path="defenses"
-              element={
-                <PlaceholderPage
-                    eyebrow="DEFENSIVE CONTROLS"
-                    title="Defense Lab"
-                    description="Enable and inspect the mechanisms that detect, slow, and stop authentication attacks."
-                />
-              }
-          />
+            <Route
+                path="defenses"
+                element={<DefenseLabPage />}
+            />
 
           <Route
               path="comparison"
