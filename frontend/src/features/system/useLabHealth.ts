@@ -5,7 +5,7 @@ import type {
     LabConnectionStatus,
 } from './system.types'
 
-interface LabHealthState {
+export interface LabHealthState {
     status: LabConnectionStatus
     health: HealthResponse | null
     error: string | null
