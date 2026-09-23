@@ -46,6 +46,9 @@ public class SecurityConfig {
                                 "/api/v1/lab/**"
                         ).permitAll()
                         .requestMatchers(
+                                "/api/v1/security-score/**"
+                        ).permitAll()
+                        .requestMatchers(
                                 "/ws",
                                 "/ws/**"
                         ).permitAll()
