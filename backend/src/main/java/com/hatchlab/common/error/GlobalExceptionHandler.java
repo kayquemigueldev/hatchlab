@@ -13,6 +13,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import com.hatchlab.simulation.SimulationAlreadyRunningException;
 import com.hatchlab.simulation.SimulationNotFoundException;
 import com.hatchlab.labreset.LabResetConflictException;
+import com.hatchlab.comparison.InvalidSimulationComparisonException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -154,6 +155,23 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidSimulationComparisonException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidComparison(
+            InvalidSimulationComparisonException exception,
+            HttpServletRequest request
+    ) {
+        ApiErrorResponse response = createResponse(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(),
+                request.getRequestURI(),
+                Map.of()
+        );
+
+        return ResponseEntity
+                .badRequest()
                 .body(response);
     }
 

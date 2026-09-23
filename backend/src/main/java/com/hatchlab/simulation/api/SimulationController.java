@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import com.hatchlab.comparison.SimulationComparisonService;
+import com.hatchlab.comparison.api.SimulationComparisonResponse;
 
 import java.util.UUID;
 
@@ -27,13 +29,16 @@ public class SimulationController {
 
     private final SimulationCoordinatorService coordinatorService;
     private final SimulationQueryService queryService;
+    private final SimulationComparisonService comparisonService;
 
     public SimulationController(
             SimulationCoordinatorService coordinatorService,
-            SimulationQueryService queryService
+            SimulationQueryService queryService,
+            SimulationComparisonService comparisonService
     ) {
         this.coordinatorService = coordinatorService;
         this.queryService = queryService;
+        this.comparisonService = comparisonService;
     }
 
     @PostMapping
@@ -66,6 +71,20 @@ public class SimulationController {
                 status,
                 defenseEnabled,
                 pageable
+        );
+    }
+
+    @GetMapping("/compare")
+    public SimulationComparisonResponse compareSimulations(
+            @RequestParam("baselineId")
+            UUID baselineId,
+
+            @RequestParam("protectedId")
+            UUID protectedId
+    ) {
+        return comparisonService.compare(
+                baselineId,
+                protectedId
         );
     }
 
