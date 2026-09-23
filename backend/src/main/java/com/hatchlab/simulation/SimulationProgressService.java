@@ -3,6 +3,8 @@ package com.hatchlab.simulation;
 import com.hatchlab.attacksession.AttackSession;
 import com.hatchlab.attacksession.AttackSessionRepository;
 import com.hatchlab.authentication.domain.AuthenticationOutcome;
+import com.hatchlab.realtime.RealtimeEventPublisher;
+import com.hatchlab.simulation.api.SimulationSessionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,11 +14,14 @@ import java.util.UUID;
 public class SimulationProgressService {
 
     private final AttackSessionRepository attackSessionRepository;
+    private final RealtimeEventPublisher realtimeEventPublisher;
 
     public SimulationProgressService(
-            AttackSessionRepository attackSessionRepository
+            AttackSessionRepository attackSessionRepository,
+            RealtimeEventPublisher realtimeEventPublisher
     ) {
         this.attackSessionRepository = attackSessionRepository;
+        this.realtimeEventPublisher = realtimeEventPublisher;
     }
 
     @Transactional
@@ -34,7 +39,7 @@ public class SimulationProgressService {
             case FAILURE -> completeIfLimitWasReached(session);
         }
 
-        return attackSessionRepository.saveAndFlush(session);
+        return saveAndPublish(session);
     }
 
     @Transactional
@@ -45,7 +50,7 @@ public class SimulationProgressService {
             session.stop();
         }
 
-        return attackSessionRepository.saveAndFlush(session);
+        return saveAndPublish(session);
     }
 
     @Transactional
@@ -54,7 +59,20 @@ public class SimulationProgressService {
 
         session.markFailed();
 
-        return attackSessionRepository.saveAndFlush(session);
+        return saveAndPublish(session);
+    }
+
+    private AttackSession saveAndPublish(
+            AttackSession session
+    ) {
+        AttackSession savedSession =
+                attackSessionRepository.saveAndFlush(session);
+
+        realtimeEventPublisher.publishSimulationUpdate(
+                SimulationSessionResponse.from(savedSession)
+        );
+
+        return savedSession;
     }
 
     private AttackSession findSession(UUID sessionId) {

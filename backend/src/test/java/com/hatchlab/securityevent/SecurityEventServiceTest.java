@@ -1,9 +1,12 @@
 package com.hatchlab.securityevent;
 
 import com.hatchlab.attacksession.AttackSessionStatus;
+import com.hatchlab.authentication.domain.AuthenticationOutcome;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.defense.SecurityConfiguration;
 import com.hatchlab.defense.SecurityConfigurationService;
+import com.hatchlab.realtime.RealtimeEventPublisher;
+import com.hatchlab.securityevent.api.SecurityEventResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -11,7 +14,10 @@ import org.mockito.ArgumentCaptor;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -20,6 +26,7 @@ class SecurityEventServiceTest {
 
     private SecurityEventRepository securityEventRepository;
     private SecurityConfigurationService configurationService;
+    private RealtimeEventPublisher realtimeEventPublisher;
     private SecurityEventService service;
 
     @BeforeEach
@@ -30,9 +37,25 @@ class SecurityEventServiceTest {
         configurationService =
                 mock(SecurityConfigurationService.class);
 
+        realtimeEventPublisher =
+                mock(RealtimeEventPublisher.class);
+
+        when(securityEventRepository.save(
+                any(SecurityEvent.class)
+        )).thenAnswer(invocation ->
+                invocation.getArgument(0)
+        );
+
+        when(securityEventRepository.saveAll(
+                anyList()
+        )).thenAnswer(invocation ->
+                invocation.getArgument(0)
+        );
+
         service = new SecurityEventService(
                 securityEventRepository,
-                configurationService
+                configurationService,
+                realtimeEventPublisher
         );
     }
 
@@ -125,6 +148,68 @@ class SecurityEventServiceTest {
     }
 
     @Test
+    void shouldPublishSimulationEventInRealTime() {
+        enableEventLogging();
+
+        UUID sessionId = UUID.randomUUID();
+
+        service.recordSimulationStarted(
+                "admin",
+                sessionId
+        );
+
+        ArgumentCaptor<SecurityEventResponse> responseCaptor =
+                ArgumentCaptor.forClass(
+                        SecurityEventResponse.class
+                );
+
+        verify(realtimeEventPublisher)
+                .publishSecurityEvent(
+                        responseCaptor.capture()
+                );
+
+        SecurityEventResponse response =
+                responseCaptor.getValue();
+
+        assertThat(response.eventType())
+                .isEqualTo(SecurityEventType.SIMULATION_STARTED);
+
+        assertThat(response.attackSessionId())
+                .isEqualTo(sessionId);
+    }
+
+    @Test
+    void shouldPublishAuthenticationEventsInRealTime() {
+        enableEventLogging();
+
+        UUID sessionId = UUID.randomUUID();
+
+        service.recordAuthentication(
+                "admin",
+                AuthenticationSource.ATTACK_SIMULATION,
+                AuthenticationOutcome.FAILURE,
+                sessionId
+        );
+
+        ArgumentCaptor<SecurityEventResponse> responseCaptor =
+                ArgumentCaptor.forClass(
+                        SecurityEventResponse.class
+                );
+
+        verify(realtimeEventPublisher, times(2))
+                .publishSecurityEvent(
+                        responseCaptor.capture()
+                );
+
+        assertThat(responseCaptor.getAllValues())
+                .extracting(SecurityEventResponse::eventType)
+                .containsExactly(
+                        SecurityEventType.LOGIN_ATTEMPT,
+                        SecurityEventType.LOGIN_FAILURE
+                );
+    }
+
+    @Test
     void shouldNotRecordSimulationEventWhenLoggingIsDisabled() {
         SecurityConfiguration configuration =
                 new SecurityConfiguration(
@@ -144,7 +229,10 @@ class SecurityEventServiceTest {
                 UUID.randomUUID()
         );
 
-        verifyNoInteractions(securityEventRepository);
+        verifyNoInteractions(
+                securityEventRepository,
+                realtimeEventPublisher
+        );
     }
 
     private void enableEventLogging() {

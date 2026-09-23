@@ -6,9 +6,12 @@ import com.hatchlab.attacksession.AttackSessionStatus;
 import com.hatchlab.defense.SecurityConfiguration;
 import com.hatchlab.defense.SecurityConfigurationService;
 import com.hatchlab.simulation.api.StartSimulationRequest;
+import com.hatchlab.simulation.api.SimulationSessionResponse;
+import com.hatchlab.realtime.RealtimeEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 
@@ -21,11 +24,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+
 class SimulationSessionServiceTest {
 
     private AttackSessionRepository attackSessionRepository;
     private SecurityConfigurationService configurationService;
     private SimulationSessionService service;
+    private RealtimeEventPublisher realtimeEventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -35,10 +40,14 @@ class SimulationSessionServiceTest {
         configurationService =
                 mock(SecurityConfigurationService.class);
 
+        realtimeEventPublisher =
+                mock(RealtimeEventPublisher.class);
+
         service = new SimulationSessionService(
                 attackSessionRepository,
                 configurationService,
-                new ObjectMapper()
+                new ObjectMapper(),
+                realtimeEventPublisher
         );
     }
 
@@ -95,6 +104,29 @@ class SimulationSessionServiceTest {
 
         verify(attackSessionRepository)
                 .saveAndFlush(any(AttackSession.class));
+
+        ArgumentCaptor<SimulationSessionResponse> responseCaptor =
+                ArgumentCaptor.forClass(
+                        SimulationSessionResponse.class
+                );
+
+        verify(realtimeEventPublisher)
+                .publishSimulationUpdate(
+                        responseCaptor.capture()
+                );
+
+        SimulationSessionResponse response =
+                responseCaptor.getValue();
+
+        assertThat(response.status())
+                .isEqualTo(AttackSessionStatus.RUNNING);
+
+        assertThat(response.requestedAttempts()).isEqualTo(100);
+        assertThat(response.totalAttempts()).isZero();
+        assertThat(response.failedAttempts()).isZero();
+        assertThat(response.successfulAttempts()).isZero();
+        assertThat(response.blockedAttempts()).isZero();
+        assertThat(response.defenseEnabled()).isTrue();
     }
 
     @Test
@@ -131,6 +163,9 @@ class SimulationSessionServiceTest {
                 never()
         ).saveAndFlush(any(AttackSession.class));
 
-        verifyNoInteractions(configurationService);
+        verifyNoInteractions(
+                configurationService,
+                realtimeEventPublisher
+        );
     }
 }

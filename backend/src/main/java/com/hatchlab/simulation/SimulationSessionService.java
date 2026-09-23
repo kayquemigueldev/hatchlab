@@ -5,6 +5,8 @@ import com.hatchlab.attacksession.AttackSessionRepository;
 import com.hatchlab.attacksession.AttackSessionStatus;
 import com.hatchlab.defense.SecurityConfiguration;
 import com.hatchlab.defense.SecurityConfigurationService;
+import com.hatchlab.realtime.RealtimeEventPublisher;
+import com.hatchlab.simulation.api.SimulationSessionResponse;
 import com.hatchlab.simulation.api.StartSimulationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +21,28 @@ public class SimulationSessionService {
     private final AttackSessionRepository attackSessionRepository;
     private final SecurityConfigurationService configurationService;
     private final ObjectMapper objectMapper;
+    private final RealtimeEventPublisher realtimeEventPublisher;
 
     public SimulationSessionService(
             AttackSessionRepository attackSessionRepository,
             SecurityConfigurationService configurationService,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            RealtimeEventPublisher realtimeEventPublisher
     ) {
         this.attackSessionRepository = attackSessionRepository;
         this.configurationService = configurationService;
         this.objectMapper = objectMapper;
+        this.realtimeEventPublisher = realtimeEventPublisher;
     }
 
     @Transactional
     public AttackSession createSession(
             StartSimulationRequest request
     ) {
-        Objects.requireNonNull(request, "Simulation request is required.");
+        Objects.requireNonNull(
+                request,
+                "Simulation request is required."
+        );
 
         ensureNoSessionIsRunning();
 
@@ -53,7 +61,14 @@ public class SimulationSessionService {
                 snapshotJson
         );
 
-        return attackSessionRepository.saveAndFlush(session);
+        AttackSession savedSession =
+                attackSessionRepository.saveAndFlush(session);
+
+        realtimeEventPublisher.publishSimulationUpdate(
+                SimulationSessionResponse.from(savedSession)
+        );
+
+        return savedSession;
     }
 
     private void ensureNoSessionIsRunning() {

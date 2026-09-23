@@ -1,9 +1,11 @@
 package com.hatchlab.securityevent;
 
+import com.hatchlab.attacksession.AttackSessionStatus;
 import com.hatchlab.authentication.domain.AuthenticationOutcome;
 import com.hatchlab.authentication.domain.AuthenticationSource;
 import com.hatchlab.defense.SecurityConfigurationService;
-import com.hatchlab.attacksession.AttackSessionStatus;
+import com.hatchlab.realtime.RealtimeEventPublisher;
+import com.hatchlab.securityevent.api.SecurityEventResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,13 +17,16 @@ public class SecurityEventService {
 
     private final SecurityEventRepository securityEventRepository;
     private final SecurityConfigurationService configurationService;
+    private final RealtimeEventPublisher realtimeEventPublisher;
 
     public SecurityEventService(
             SecurityEventRepository securityEventRepository,
-            SecurityConfigurationService configurationService
+            SecurityConfigurationService configurationService,
+            RealtimeEventPublisher realtimeEventPublisher
     ) {
         this.securityEventRepository = securityEventRepository;
         this.configurationService = configurationService;
+        this.realtimeEventPublisher = realtimeEventPublisher;
     }
 
     public void recordAuthentication(
@@ -51,7 +56,7 @@ public class SecurityEventService {
                 attackSessionId
         );
 
-        securityEventRepository.saveAll(
+        saveAllAndPublish(
                 List.of(attemptEvent, resultEvent)
         );
     }
@@ -75,7 +80,7 @@ public class SecurityEventService {
                 attackSessionId
         );
 
-        securityEventRepository.save(event);
+        saveAndPublish(event);
     }
 
     public void recordAccountLocked(
@@ -97,7 +102,7 @@ public class SecurityEventService {
                 attackSessionId
         );
 
-        securityEventRepository.save(event);
+        saveAndPublish(event);
     }
 
     public void recordSuspiciousActivity(
@@ -119,7 +124,97 @@ public class SecurityEventService {
                 attackSessionId
         );
 
-        securityEventRepository.save(event);
+        saveAndPublish(event);
+    }
+
+    public void recordClientThrottled(
+            String username,
+            AuthenticationSource source,
+            UUID attackSessionId
+    ) {
+        if (!isLoggingEnabled()) {
+            return;
+        }
+
+        SecurityEvent event = new SecurityEvent(
+                Instant.now(),
+                SecurityEventType.CLIENT_THROTTLED,
+                SecurityEventSeverity.HIGH,
+                source,
+                username,
+                "Authentication client was throttled after repeated failures.",
+                attackSessionId
+        );
+
+        saveAndPublish(event);
+    }
+
+    public void recordSimulationStarted(
+            String username,
+            UUID attackSessionId
+    ) {
+        recordSimulationEvent(
+                SecurityEventType.SIMULATION_STARTED,
+                SecurityEventSeverity.INFO,
+                username,
+                "Controlled attack simulation started.",
+                attackSessionId
+        );
+    }
+
+    public void recordSimulationStopped(
+            String username,
+            UUID attackSessionId
+    ) {
+        recordSimulationEvent(
+                SecurityEventType.SIMULATION_STOPPED,
+                SecurityEventSeverity.INFO,
+                username,
+                "Controlled attack simulation was stopped.",
+                attackSessionId
+        );
+    }
+
+    public void recordSimulationCompleted(
+            String username,
+            UUID attackSessionId,
+            AttackSessionStatus status
+    ) {
+        SecurityEventSeverity severity = switch (status) {
+            case BLOCKED, FAILED ->
+                    SecurityEventSeverity.HIGH;
+
+            default ->
+                    SecurityEventSeverity.INFO;
+        };
+
+        String description = switch (status) {
+            case SUCCESS ->
+                    "Simulation completed after successful authentication.";
+
+            case BLOCKED ->
+                    "Simulation was blocked by an enabled security control.";
+
+            case COMPLETED ->
+                    "Simulation exhausted all requested authentication attempts.";
+
+            case FAILED ->
+                    "Simulation failed due to an internal execution error.";
+
+            case STOPPED ->
+                    "Simulation finished after a manual stop request.";
+
+            case IDLE, RUNNING ->
+                    "Simulation reported a non-terminal execution state.";
+        };
+
+        recordSimulationEvent(
+                SecurityEventType.SIMULATION_COMPLETED,
+                severity,
+                username,
+                description,
+                attackSessionId
+        );
     }
 
     private boolean isLoggingEnabled() {
@@ -167,93 +262,6 @@ public class SecurityEventService {
         };
     }
 
-    public void recordClientThrottled(
-            String username,
-            AuthenticationSource source,
-            UUID attackSessionId
-    ) {
-        if (!isLoggingEnabled()) {
-            return;
-        }
-
-        SecurityEvent event = new SecurityEvent(
-                Instant.now(),
-                SecurityEventType.CLIENT_THROTTLED,
-                SecurityEventSeverity.HIGH,
-                source,
-                username,
-                "Authentication client was throttled after repeated failures.",
-                attackSessionId
-        );
-
-        securityEventRepository.save(event);
-    }
-
-    public void recordSimulationStarted(
-            String username,
-            UUID attackSessionId
-    ) {
-        recordSimulationEvent(
-                SecurityEventType.SIMULATION_STARTED,
-                SecurityEventSeverity.INFO,
-                username,
-                "Controlled attack simulation started.",
-                attackSessionId
-        );
-    }
-
-    public void recordSimulationStopped(
-            String username,
-            UUID attackSessionId
-    ) {
-        recordSimulationEvent(
-                SecurityEventType.SIMULATION_STOPPED,
-                SecurityEventSeverity.INFO,
-                username,
-                "Controlled attack simulation was stopped.",
-                attackSessionId
-        );
-    }
-
-    public void recordSimulationCompleted(
-            String username,
-            UUID attackSessionId,
-            AttackSessionStatus status
-    ) {
-        SecurityEventSeverity severity = switch (status) {
-            case BLOCKED, FAILED -> SecurityEventSeverity.HIGH;
-            default -> SecurityEventSeverity.INFO;
-        };
-
-        String description = switch (status) {
-            case SUCCESS ->
-                    "Simulation completed after successful authentication.";
-
-            case BLOCKED ->
-                    "Simulation was blocked by an enabled security control.";
-
-            case COMPLETED ->
-                    "Simulation exhausted all requested authentication attempts.";
-
-            case FAILED ->
-                    "Simulation failed due to an internal execution error.";
-
-            case STOPPED ->
-                    "Simulation finished after a manual stop request.";
-
-            case IDLE, RUNNING ->
-                    "Simulation reported a non-terminal execution state.";
-        };
-
-        recordSimulationEvent(
-                SecurityEventType.SIMULATION_COMPLETED,
-                severity,
-                username,
-                description,
-                attackSessionId
-        );
-    }
-
     private void recordSimulationEvent(
             SecurityEventType eventType,
             SecurityEventSeverity severity,
@@ -275,7 +283,28 @@ public class SecurityEventService {
                 attackSessionId
         );
 
-        securityEventRepository.save(event);
+        saveAndPublish(event);
     }
 
+    private void saveAndPublish(SecurityEvent event) {
+        SecurityEvent savedEvent =
+                securityEventRepository.save(event);
+
+        realtimeEventPublisher.publishSecurityEvent(
+                SecurityEventResponse.from(savedEvent)
+        );
+    }
+
+    private void saveAllAndPublish(
+            List<SecurityEvent> events
+    ) {
+        List<SecurityEvent> savedEvents =
+                securityEventRepository.saveAll(events);
+
+        savedEvents.stream()
+                .map(SecurityEventResponse::from)
+                .forEach(
+                        realtimeEventPublisher::publishSecurityEvent
+                );
+    }
 }

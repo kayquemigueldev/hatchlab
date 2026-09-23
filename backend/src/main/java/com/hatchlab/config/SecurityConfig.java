@@ -45,6 +45,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/lab/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/ws",
+                                "/ws/**"
+                        ).permitAll()
                         .anyRequest().denyAll()
                 );
 
