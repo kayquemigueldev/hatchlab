@@ -6,10 +6,10 @@ import {
 import './App.css'
 import { AppLayout } from './app/layout/AppLayout'
 import { DashboardPage } from './features/dashboard/DashboardPage'
-import { PlaceholderPage } from './shared/components/PlaceholderPage'
 import { DefenseLabPage } from './features/defenses/DefenseLabPage'
 import { AttackLabPage } from './features/attacks/AttackLabPage'
 import { ComparisonPage } from './features/comparison/ComparisonPage'
+import { SecurityLogsPage } from './features/securitylogs/SecurityLogsPage'
 
 function App() {
   return (
@@ -35,16 +35,10 @@ function App() {
                 element={<ComparisonPage />}
             />
 
-          <Route
-              path="logs"
-              element={
-                <PlaceholderPage
-                    eyebrow="SECURITY TELEMETRY"
-                    title="Security Logs"
-                    description="Search and inspect authentication events produced by the local laboratory."
-                />
-              }
-          />
+            <Route
+                path="logs"
+                element={<SecurityLogsPage />}
+            />
 
           <Route
               path="*"
