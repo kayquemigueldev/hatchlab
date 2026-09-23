@@ -9,6 +9,7 @@ import { DashboardPage } from './features/dashboard/DashboardPage'
 import { PlaceholderPage } from './shared/components/PlaceholderPage'
 import { DefenseLabPage } from './features/defenses/DefenseLabPage'
 import { AttackLabPage } from './features/attacks/AttackLabPage'
+import { ComparisonPage } from './features/comparison/ComparisonPage'
 
 function App() {
   return (
@@ -29,16 +30,10 @@ function App() {
                 element={<DefenseLabPage />}
             />
 
-          <Route
-              path="comparison"
-              element={
-                <PlaceholderPage
-                    eyebrow="SECURITY ANALYSIS"
-                    title="Security Comparison"
-                    description="Compare baseline and protected simulations using real laboratory evidence."
-                />
-              }
-          />
+            <Route
+                path="comparison"
+                element={<ComparisonPage />}
+            />
 
           <Route
               path="logs"

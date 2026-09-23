@@ -7,10 +7,12 @@ import type {
 import { useAttackSimulation } from './useAttackSimulation'
 
 const STATUS_LABELS: Record<SimulationStatus, string> = {
+    IDLE: 'Idle',
     RUNNING: 'Running',
     SUCCESS: 'Completed',
     BLOCKED: 'Blocked',
     STOPPED: 'Stopped',
+    COMPLETED: 'Completed',
     FAILED: 'Failed',
 }
 

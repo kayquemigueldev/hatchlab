@@ -1,8 +1,10 @@
 export type SimulationStatus =
+    | 'IDLE'
     | 'RUNNING'
     | 'SUCCESS'
     | 'BLOCKED'
     | 'STOPPED'
+    | 'COMPLETED'
     | 'FAILED'
 
 export type SimulationAttemptCount = 100 | 500 | 1000
