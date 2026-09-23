@@ -8,6 +8,7 @@ import { AppLayout } from './app/layout/AppLayout'
 import { DashboardPage } from './features/dashboard/DashboardPage'
 import { PlaceholderPage } from './shared/components/PlaceholderPage'
 import { DefenseLabPage } from './features/defenses/DefenseLabPage'
+import { AttackLabPage } from './features/attacks/AttackLabPage'
 
 function App() {
   return (
@@ -18,16 +19,10 @@ function App() {
               element={<DashboardPage />}
           />
 
-          <Route
-              path="attack"
-              element={
-                <PlaceholderPage
-                    eyebrow="ATTACK SIMULATION"
-                    title="Attack Lab"
-                    description="Configure and observe controlled authentication simulations against the local laboratory."
-                />
-              }
-          />
+            <Route
+                path="attack"
+                element={<AttackLabPage />}
+            />
 
             <Route
                 path="defenses"
