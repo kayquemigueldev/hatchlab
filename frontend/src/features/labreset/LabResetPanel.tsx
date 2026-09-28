@@ -7,10 +7,14 @@ import type { LabResetResponse } from './labReset.types'
 
 interface LabResetPanelProps {
     disabled: boolean
+    onReset?: (
+        response: LabResetResponse,
+    ) => void
 }
 
 export function LabResetPanel({
                                   disabled,
+                                  onReset,
                               }: LabResetPanelProps) {
     const [confirmation, setConfirmation] =
         useState('')
@@ -45,6 +49,7 @@ export function LabResetPanel({
 
             setResult(response)
             setConfirmation('')
+            onReset?.(response)
         } catch (requestError) {
             setError(
                 requestError instanceof Error
