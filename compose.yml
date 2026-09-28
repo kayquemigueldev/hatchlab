@@ -20,5 +20,58 @@ services:
       retries: 10
       start_period: 10s
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hatchlab-backend
+    restart: unless-stopped
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      BACKEND_PORT: 8080
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      LAB_ADMIN_USERNAME: ${LAB_ADMIN_USERNAME:-admin}
+      LAB_ADMIN_PASSWORD: ${LAB_ADMIN_PASSWORD:-HatchLab!2026}
+      RATE_LIMIT_MAX_ATTEMPTS: ${RATE_LIMIT_MAX_ATTEMPTS}
+      RATE_LIMIT_WINDOW_SECONDS: ${RATE_LIMIT_WINDOW_SECONDS}
+      ACCOUNT_LOCKOUT_MAX_FAILURES: ${ACCOUNT_LOCKOUT_MAX_FAILURES}
+      ACCOUNT_LOCKOUT_FAILURE_WINDOW_SECONDS: ${ACCOUNT_LOCKOUT_FAILURE_WINDOW_SECONDS}
+      ACCOUNT_LOCKOUT_DURATION_SECONDS: ${ACCOUNT_LOCKOUT_DURATION_SECONDS}
+      PROGRESSIVE_DELAY_BASE_MS: ${PROGRESSIVE_DELAY_BASE_MS}
+      PROGRESSIVE_DELAY_MAX_MS: ${PROGRESSIVE_DELAY_MAX_MS}
+      PROGRESSIVE_DELAY_WINDOW_SECONDS: ${PROGRESSIVE_DELAY_WINDOW_SECONDS}
+      SUSPICIOUS_ACTIVITY_THRESHOLD: ${SUSPICIOUS_ACTIVITY_THRESHOLD}
+      SUSPICIOUS_ACTIVITY_WINDOW_SECONDS: ${SUSPICIOUS_ACTIVITY_WINDOW_SECONDS}
+      SUSPICIOUS_ACTIVITY_COOLDOWN_SECONDS: ${SUSPICIOUS_ACTIVITY_COOLDOWN_SECONDS}
+      CLIENT_THROTTLING_MAX_FAILURES: ${CLIENT_THROTTLING_MAX_FAILURES}
+      CLIENT_THROTTLING_WINDOW_SECONDS: ${CLIENT_THROTTLING_WINDOW_SECONDS}
+    ports:
+      - "${BACKEND_PORT}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://127.0.0.1:8080/actuator/health | grep -q '"status":"UP"'
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hatchlab-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
 volumes:
   hatchlab_postgres_data:
