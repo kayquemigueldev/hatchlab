@@ -1,6 +1,7 @@
 import { useOutletContext } from 'react-router'
 import type { AppOutletContext } from '../../app/layout/AppLayout'
 import { useRealtime } from '../../shared/realtime/useRealtime'
+import { LabResetPanel } from '../labreset/LabResetPanel'
 
 export function DashboardPage() {
     const { labHealth } =
@@ -38,6 +39,11 @@ export function DashboardPage() {
                 className="overview-grid"
                 aria-label="Laboratory overview"
             >
+
+                <LabResetPanel
+                    disabled={status !== 'ONLINE'}
+                />
+
                 <article className="overview-card">
           <span className="overview-card__label">
             TARGET
