@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRealtime } from '../../shared/realtime/useRealtime'
 import {
     getSimulation,
     startSimulation,
@@ -33,6 +34,7 @@ export function useAttackSimulation() {
         useState<SimulationSession | null>(null)
     const [isStarting, setIsStarting] = useState(false)
     const [isStopping, setIsStopping] = useState(false)
+    const {status: realtimeStatus, subscribe,} = useRealtime()
     const [error, setError] = useState<string | null>(null)
 
     const pollingTimerRef = useRef<number | null>(null)
@@ -102,7 +104,10 @@ export function useAttackSimulation() {
 
             setSession(createdSession)
 
-            if (createdSession.status === 'RUNNING') {
+            if (
+                createdSession.status === 'RUNNING' &&
+                realtimeStatus !== 'CONNECTED'
+            ) {
                 beginPolling(createdSession.id)
             }
         } catch (startError) {
@@ -110,7 +115,13 @@ export function useAttackSimulation() {
         } finally {
             setIsStarting(false)
         }
-    }, [beginPolling, isStarting, request, session?.status])
+    }, [
+        beginPolling,
+        isStarting,
+        realtimeStatus,
+        request,
+        session?.status,
+    ])
 
     const stop = useCallback(async () => {
         if (
@@ -145,6 +156,44 @@ export function useAttackSimulation() {
         setSession(null)
         setError(null)
     }, [session?.status, stopPolling])
+
+    const activeSessionId =
+        session?.status === 'RUNNING'
+            ? session.id
+            : null
+
+    useEffect(() => {
+        if (!activeSessionId) {
+            return
+        }
+
+        if (realtimeStatus !== 'CONNECTED') {
+            beginPolling(activeSessionId)
+
+            return stopPolling
+        }
+
+        stopPolling()
+
+        return subscribe<SimulationSession>(
+            `/topic/simulations/${activeSessionId}`,
+            (updatedSession) => {
+                setSession(updatedSession)
+
+                if (
+                    updatedSession.status !== 'RUNNING'
+                ) {
+                    stopPolling()
+                }
+            },
+        )
+    }, [
+        activeSessionId,
+        beginPolling,
+        realtimeStatus,
+        stopPolling,
+        subscribe,
+    ])
 
     useEffect(() => {
         return () => {

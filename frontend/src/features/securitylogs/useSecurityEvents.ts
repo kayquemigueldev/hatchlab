@@ -5,6 +5,7 @@ import {
     useState,
 } from 'react'
 import { getSecurityEvents } from './securityLog.api'
+import { useRealtime } from '../../shared/realtime/useRealtime'
 import type {
     SecurityEventFilters,
     SecurityEventSeverity,
@@ -39,7 +40,47 @@ function getErrorMessage(error: unknown): string {
     return 'Unable to load security events.'
 }
 
+function matchesFilters(
+    event: SecurityEvent,
+    filters: SecurityEventFilters,
+): boolean {
+    if (
+        filters.eventType &&
+        event.eventType !== filters.eventType
+    ) {
+        return false
+    }
+
+    if (
+        filters.severity &&
+        event.severity !== filters.severity
+    ) {
+        return false
+    }
+
+    const search = filters.search
+        .trim()
+        .toLowerCase()
+
+    if (!search) {
+        return true
+    }
+
+    return (
+        event.username
+            ?.toLowerCase()
+            .includes(search) === true ||
+        event.description
+            .toLowerCase()
+            .includes(search)
+    )
+}
+
 export function useSecurityEvents() {
+    const {
+        status: realtimeStatus,
+        subscribe,
+    } = useRealtime()
     const [draftFilters, setDraftFilters] =
         useState<EditableFilters>(
             INITIAL_EDITABLE_FILTERS,
@@ -106,6 +147,60 @@ export function useSecurityEvents() {
             active = false
         }
     }, [])
+
+    useEffect(() => {
+        if (realtimeStatus !== 'CONNECTED') {
+            return
+        }
+
+        return subscribe<SecurityEvent>(
+            '/topic/security-events',
+            (event) => {
+                setResponse((current) => {
+                    if (
+                        !current ||
+                        !matchesFilters(
+                            event,
+                            appliedFilters,
+                        )
+                    ) {
+                        return current
+                    }
+
+                    const totalElements =
+                        current.totalElements + 1
+
+                    const totalPages = Math.ceil(
+                        totalElements / current.size,
+                    )
+
+                    if (appliedFilters.page !== 0) {
+                        return {
+                            ...current,
+                            totalElements,
+                            totalPages,
+                        }
+                    }
+
+                    return {
+                        ...current,
+                        content: [
+                            event,
+                            ...current.content,
+                        ].slice(0, current.size),
+                        totalElements,
+                        totalPages,
+                        first: true,
+                        last: totalPages <= 1,
+                    }
+                })
+            },
+        )
+    }, [
+        appliedFilters,
+        realtimeStatus,
+        subscribe,
+    ])
 
     const updateDraftFilter = useCallback(
         <Field extends keyof EditableFilters>(

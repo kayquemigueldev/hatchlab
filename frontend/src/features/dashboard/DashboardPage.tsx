@@ -1,9 +1,12 @@
 import { useOutletContext } from 'react-router'
 import type { AppOutletContext } from '../../app/layout/AppLayout'
+import { useRealtime } from '../../shared/realtime/useRealtime'
 
 export function DashboardPage() {
     const { labHealth } =
         useOutletContext<AppOutletContext>()
+    const { status: realtimeStatus } =
+        useRealtime()
 
     const {
         status,
@@ -66,7 +69,11 @@ export function DashboardPage() {
             REALTIME
           </span>
 
-                    <strong>STANDBY</strong>
+                    <strong>
+                        {realtimeStatus === 'CONNECTED'
+                            ? 'LIVE'
+                            : realtimeStatus}
+                    </strong>
                     <small>WebSocket event channel</small>
                 </article>
 
