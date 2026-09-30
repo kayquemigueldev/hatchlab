@@ -1,4 +1,5 @@
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
+import { GuidedAttackPanel } from './GuidedAttackPanel'
 import type {
     SimulationAttemptCount,
     SimulationSession,
@@ -32,6 +33,10 @@ function formatSessionId(session: SimulationSession): string {
 }
 
 export function AttackLabPage() {
+
+    const [viewMode, setViewMode] =
+        useState<'GUIDED' | 'TECHNICAL'>('GUIDED')
+
     const {
         request,
         session,
@@ -74,6 +79,50 @@ export function AttackLabPage() {
                         <span>AUTHORIZED TARGET</span>
                         <strong>LOCAL AUTH LAB</strong>
                         <small>localhost only</small>
+                    </div>
+                </div>
+
+                <div className="attack-view-mode">
+                    <div>
+                        <span>EXPERIENCE MODE</span>
+
+                        <strong>
+                            {viewMode === 'GUIDED'
+                                ? 'Guided explanation'
+                                : 'Technical telemetry'}
+                        </strong>
+                    </div>
+
+                    <div
+                        className="attack-view-mode__options"
+                        role="group"
+                        aria-label="Attack experience mode"
+                    >
+                        <button
+                            className={
+                                viewMode === 'GUIDED'
+                                    ? 'attack-view-mode__option attack-view-mode__option--active'
+                                    : 'attack-view-mode__option'
+                            }
+                            type="button"
+                            onClick={() => setViewMode('GUIDED')}
+                        >
+                            Guided
+                        </button>
+
+                        <button
+                            className={
+                                viewMode === 'TECHNICAL'
+                                    ? 'attack-view-mode__option attack-view-mode__option--active'
+                                    : 'attack-view-mode__option'
+                            }
+                            type="button"
+                            onClick={() =>
+                                setViewMode('TECHNICAL')
+                            }
+                        >
+                            Technical
+                        </button>
                     </div>
                 </div>
 
@@ -262,8 +311,19 @@ export function AttackLabPage() {
                         </div>
                     </form>
 
+                    {viewMode === 'GUIDED' && (
+                        <GuidedAttackPanel
+                            session={session}
+                            progressPercentage={progressPercentage}
+                        />
+                    )}
+
                     <section
-                        className="simulation-monitor"
+                        className={
+                            viewMode === 'GUIDED'
+                                ? 'simulation-monitor simulation-monitor--hidden'
+                                : 'simulation-monitor'
+                        }
                         aria-live="polite"
                     >
                         <div className="simulation-monitor__header">
