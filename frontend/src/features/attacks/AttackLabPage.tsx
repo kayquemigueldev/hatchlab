@@ -6,6 +6,7 @@ import type {
     SimulationStatus,
 } from './attack.types'
 import { useAttackSimulation } from './useAttackSimulation'
+import { GuidedScenarioPicker } from './GuidedScenarioPicker'
 
 const STATUS_LABELS: Record<SimulationStatus, string> = {
     IDLE: 'Idle',
@@ -47,6 +48,7 @@ export function AttackLabPage() {
         progressPercentage,
         error,
         updateRequest,
+        applyRequest,
         start,
         stop,
         clearSession,
@@ -125,6 +127,13 @@ export function AttackLabPage() {
                         </button>
                     </div>
                 </div>
+
+                {viewMode === 'GUIDED' && !session && (
+                    <GuidedScenarioPicker
+                        applyAttackRequest={applyRequest}
+                        disabled={isStarting}
+                    />
+                )}
 
                 <div className="attack-lab__workspace">
                     <form

@@ -3927,3 +3927,385 @@
     border-bottom: 0;
   }
 }
+
+.guided-scenarios {
+  margin-bottom: 16px;
+  padding: clamp(24px, 3vw, 34px);
+  border: 1px solid rgba(81, 226, 143, 0.2);
+  border-radius: 15px;
+  background:
+          linear-gradient(
+                  145deg,
+                  rgba(81, 226, 143, 0.04),
+                  transparent 38%
+          ),
+          rgba(13, 19, 16, 0.86);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.16);
+}
+
+.guided-scenarios__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  padding-bottom: 23px;
+  border-bottom: 1px solid var(--border);
+}
+
+.guided-scenarios__header h2 {
+  margin: 13px 0 0;
+  color: var(--text);
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: -0.035em;
+}
+
+.guided-scenarios__header p {
+  max-width: 690px;
+  margin: 9px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.guided-scenarios__badge {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0 11px;
+  border: 1px solid rgba(81, 226, 143, 0.28);
+  border-radius: 999px;
+  color: var(--primary);
+  background: var(--primary-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+}
+
+.guided-scenarios__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.guided-scenario-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 210px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 19px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: inherit;
+  background: rgba(7, 12, 9, 0.62);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+          border-color 170ms ease,
+          background 170ms ease,
+          transform 170ms ease,
+          box-shadow 170ms ease;
+}
+
+.guided-scenario-card::after {
+  position: absolute;
+  inset: auto -30px -50px auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(81, 226, 143, 0.025);
+  content: "";
+  transition: background 170ms ease;
+}
+
+.guided-scenario-card:not(:disabled):hover {
+  border-color: rgba(81, 226, 143, 0.28);
+  background: rgba(10, 18, 13, 0.84);
+  transform: translateY(-2px);
+}
+
+.guided-scenario-card:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.guided-scenario-card__sequence {
+  color: #5e6d64;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.guided-scenario-card > strong {
+  margin-top: 22px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.guided-scenario-card > p {
+  margin: 9px 0 18px;
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.guided-scenario-card__select {
+  margin-top: auto;
+  color: #66756c;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guided-scenario-card--selected {
+  border-color: rgba(81, 226, 143, 0.48);
+  background:
+          linear-gradient(
+                  145deg,
+                  rgba(81, 226, 143, 0.12),
+                  transparent 68%
+          ),
+          rgba(8, 16, 11, 0.9);
+  box-shadow:
+          inset 0 0 30px rgba(81, 226, 143, 0.025),
+          0 12px 32px rgba(0, 0, 0, 0.14);
+  transform: translateY(-2px);
+}
+
+.guided-scenario-card--selected::after {
+  background: rgba(81, 226, 143, 0.06);
+}
+
+.guided-scenario-card--selected
+.guided-scenario-card__sequence,
+.guided-scenario-card--selected
+.guided-scenario-card__select {
+  color: var(--primary);
+}
+
+.guided-scenario-card--warning.guided-scenario-card--selected {
+  border-color: rgba(244, 201, 93, 0.42);
+  background:
+          linear-gradient(
+                  145deg,
+                  rgba(244, 201, 93, 0.1),
+                  transparent 68%
+          ),
+          rgba(16, 15, 8, 0.86);
+}
+
+.guided-scenario-card--warning.guided-scenario-card--selected
+.guided-scenario-card__sequence,
+.guided-scenario-card--warning.guided-scenario-card--selected
+.guided-scenario-card__select {
+  color: var(--warning);
+}
+
+.guided-scenario-detail {
+  display: grid;
+  grid-template-columns:
+          minmax(0, 1.25fr)
+          minmax(220px, 0.75fr)
+          minmax(190px, auto);
+  gap: 24px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(7, 12, 9, 0.64);
+}
+
+.guided-scenario-detail--safe {
+  border-color: rgba(81, 226, 143, 0.24);
+}
+
+.guided-scenario-detail--warning {
+  border-color: rgba(244, 201, 93, 0.22);
+}
+
+.guided-scenario-detail__content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.guided-scenario-detail__content > div,
+.guided-scenario-detail__defenses {
+  min-width: 0;
+}
+
+.guided-scenario-detail__content span,
+.guided-scenario-detail__defenses > span {
+  display: block;
+  color: #6b7a71;
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.guided-scenario-detail__content strong,
+.guided-scenario-detail__content p {
+  display: block;
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.guided-scenario-detail__content strong {
+  color: var(--text);
+}
+
+.guided-scenario-detail__defenses > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.guided-scenario-detail__defenses small {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid rgba(81, 226, 143, 0.18);
+  border-radius: 999px;
+  color: #91a198;
+  background: rgba(81, 226, 143, 0.04);
+  font-family: var(--mono);
+  font-size: 7px;
+}
+
+.guided-scenario-detail--warning
+.guided-scenario-detail__defenses small {
+  border-color: rgba(244, 201, 93, 0.18);
+  color: #ad9b69;
+  background: rgba(244, 201, 93, 0.035);
+}
+
+.guided-scenario-detail__action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guided-scenario-detail__action .button {
+  width: 100%;
+  min-width: 190px;
+}
+
+.guided-scenario-detail__action > small {
+  color: #65736b;
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.guided-scenarios__message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border: 1px solid rgba(81, 226, 143, 0.28);
+  border-radius: 9px;
+  color: var(--primary);
+  background: rgba(81, 226, 143, 0.055);
+}
+
+.guided-scenarios__message strong {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.guided-scenarios__message span {
+  color: #91a198;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1180px) {
+  .guided-scenarios__grid {
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+  }
+
+  .guided-scenario-detail {
+    grid-template-columns:
+            minmax(0, 1fr)
+            minmax(220px, 0.7fr);
+  }
+
+  .guided-scenario-detail__action {
+    grid-column: 1 / -1;
+    align-items: flex-start;
+  }
+
+  .guided-scenario-detail__action .button {
+    width: auto;
+  }
+
+  .guided-scenario-detail__action > small {
+    text-align: left;
+  }
+}
+
+@media (max-width: 780px) {
+  .guided-scenarios__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .guided-scenario-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .guided-scenario-detail__action {
+    grid-column: auto;
+  }
+
+  .guided-scenario-detail__action .button {
+    width: 100%;
+  }
+
+  .guided-scenarios__message {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .guided-scenarios {
+    padding: 21px;
+  }
+
+  .guided-scenarios__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .guided-scenario-card {
+    min-height: 185px;
+  }
+
+  .guided-scenario-detail {
+    padding: 18px;
+  }
+
+  .guided-scenario-detail__content {
+    grid-template-columns: 1fr;
+  }
+}

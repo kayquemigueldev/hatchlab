@@ -88,6 +88,27 @@ export function useAttackSimulation() {
         [],
     )
 
+    const applyRequest = useCallback(
+        (nextRequest: StartSimulationRequest) => {
+            if (
+                isStarting ||
+                session?.status === 'RUNNING'
+            ) {
+                return
+            }
+
+            setRequest({
+                ...nextRequest,
+            })
+
+            setError(null)
+        },
+        [
+            isStarting,
+            session?.status,
+        ],
+    )
+
     const start = useCallback(async () => {
         if (isStarting || session?.status === 'RUNNING') {
             return
@@ -228,6 +249,7 @@ export function useAttackSimulation() {
         progressPercentage,
         error,
         updateRequest,
+        applyRequest,
         start,
         stop,
         clearSession,
