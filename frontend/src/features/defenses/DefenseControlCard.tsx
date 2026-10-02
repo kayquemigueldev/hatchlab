@@ -2,6 +2,7 @@ interface DefenseControlCardProps {
     label: string
     category: string
     description: string
+    plainLanguage: string
     enabled: boolean
     disabled: boolean
     onToggle: () => void
@@ -11,6 +12,7 @@ export function DefenseControlCard({
                                        label,
                                        category,
                                        description,
+                                       plainLanguage,
                                        enabled,
                                        disabled,
                                        onToggle,
@@ -28,9 +30,9 @@ export function DefenseControlCard({
         >
             <div className="defense-control__header">
                 <div>
-          <span className="defense-control__category">
-            {category}
-          </span>
+                    <span className="defense-control__category">
+                        {category}
+                    </span>
 
                     <h2>{label}</h2>
                 </div>
@@ -40,7 +42,9 @@ export function DefenseControlCard({
                     className="defense-switch"
                     role="switch"
                     aria-checked={enabled}
-                    aria-label={`${label}: ${enabled ? 'enabled' : 'disabled'}`}
+                    aria-label={`${label}: ${
+                        enabled ? 'enabled' : 'disabled'
+                    }`}
                     disabled={disabled}
                     onClick={onToggle}
                 >
@@ -50,9 +54,14 @@ export function DefenseControlCard({
 
             <p>{description}</p>
 
+            <div className="defense-control__plain-language">
+                <span>IN SIMPLE TERMS</span>
+                <strong>{plainLanguage}</strong>
+            </div>
+
             <span className="defense-control__status">
-        {enabled ? 'ENABLED' : 'DISABLED'}
-      </span>
+                {enabled ? 'ENABLED' : 'DISABLED'}
+            </span>
         </article>
     )
 }

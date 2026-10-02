@@ -7,6 +7,7 @@ interface DefenseDefinition {
   label: string
   category: string
   description: string
+  plainLanguage: string
 }
 
 const DEFENSE_CONTROLS: DefenseDefinition[] = [
@@ -16,6 +17,8 @@ const DEFENSE_CONTROLS: DefenseDefinition[] = [
     category: 'REQUEST CONTROL',
     description:
       'Limits authentication attempts within a configured time window.',
+    plainLanguage:
+        'Prevents a fast stream of password guesses from reaching the login system.',
   },
   {
     key: 'progressiveDelayEnabled',
@@ -23,6 +26,8 @@ const DEFENSE_CONTROLS: DefenseDefinition[] = [
     category: 'RESPONSE CONTROL',
     description:
       'Increases response time after repeated invalid credentials.',
+    plainLanguage:
+        'Makes repeated password guesses slower, so automation loses speed.',
   },
   {
     key: 'accountLockoutEnabled',
@@ -30,6 +35,8 @@ const DEFENSE_CONTROLS: DefenseDefinition[] = [
     category: 'IDENTITY CONTROL',
     description:
       'Temporarily locks an account after successive authentication failures.',
+    plainLanguage:
+        'Temporarily closes the targeted account after too many wrong passwords.',
   },
   {
     key: 'clientThrottlingEnabled',
@@ -37,6 +44,8 @@ const DEFENSE_CONTROLS: DefenseDefinition[] = [
     category: 'CLIENT CONTROL',
     description:
       'Blocks a laboratory client that generates repeated failed attempts.',
+    plainLanguage:
+        'Slows or stops the device that keeps sending failed login requests.',
   },
   {
     key: 'suspiciousLoginDetectionEnabled',
@@ -44,6 +53,9 @@ const DEFENSE_CONTROLS: DefenseDefinition[] = [
     category: 'DETECTION',
     description:
       'Identifies abnormal authentication activity and records a high-severity event.',
+    plainLanguage:
+        'Raises a warning when the pattern looks like an automated password attack.',
+
   },
   {
     key: 'securityEventLoggingEnabled',
@@ -51,6 +63,8 @@ const DEFENSE_CONTROLS: DefenseDefinition[] = [
     category: 'OBSERVABILITY',
     description:
       'Records authentication and simulation activity for later analysis.',
+    plainLanguage:
+        'Keeps the evidence needed to reconstruct the attack and defensive response.',
   },
 ]
 
@@ -159,6 +173,7 @@ export function DefenseLabPage() {
             label={control.label}
             category={control.category}
             description={control.description}
+            plainLanguage={control.plainLanguage}
             enabled={configuration[control.key]}
             disabled={saving}
             onToggle={() =>

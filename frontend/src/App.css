@@ -4967,3 +4967,41 @@
     min-height: auto;
   }
 }
+
+.defense-control {
+  display: flex;
+  min-height: 292px;
+  flex-direction: column;
+}
+
+.defense-control__plain-language {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: auto 0 34px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(81, 226, 143, 0.035);
+}
+
+.defense-control__plain-language span {
+  color: var(--primary);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.defense-control__plain-language strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 560;
+  line-height: 1.55;
+}
+
+.defense-control--enabled
+.defense-control__plain-language {
+  border-color: rgba(81, 226, 143, 0.2);
+  background: rgba(81, 226, 143, 0.07);
+}
