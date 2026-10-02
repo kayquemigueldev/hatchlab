@@ -10,6 +10,7 @@ import { DefenseLabPage } from './features/defenses/DefenseLabPage'
 import { AttackLabPage } from './features/attacks/AttackLabPage'
 import { ComparisonPage } from './features/comparison/ComparisonPage'
 import { SecurityLogsPage } from './features/securitylogs/SecurityLogsPage'
+import { HowItWorksPage } from './features/learning/HowItWorksPage'
 
 function App() {
   return (
@@ -19,6 +20,11 @@ function App() {
               index
               element={<DashboardPage />}
           />
+
+            <Route
+                path="learn"
+                element={<HowItWorksPage />}
+            />
 
             <Route
                 path="attack"

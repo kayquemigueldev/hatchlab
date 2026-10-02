@@ -17,6 +17,12 @@ const NAVIGATION_ITEMS = [
         label: 'Dashboard',
         path: '/',
     },
+
+    {
+        label: 'How It Works',
+        path: '/learn',
+    },
+
     {
         label: 'Attack Lab',
         path: '/attack',
