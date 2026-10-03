@@ -1,4 +1,5 @@
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
+import { SecurityStoryPanel } from './SecurityStoryPanel'
 import type {
     SecurityEvent,
     SecurityEventSeverity,
@@ -132,8 +133,11 @@ function EventRow({ event }: EventRowProps) {
 }
 
 export function SecurityLogsPage() {
-    const {
-        events,
+        const [viewMode, setViewMode] =
+            useState<'STORY' | 'TECHNICAL'>('STORY')
+
+        const {
+            events,
         page,
         size,
         totalElements,
@@ -380,6 +384,41 @@ export function SecurityLogsPage() {
                         </div>
                     </div>
 
+                    <div className="security-log-view">
+                        <div>
+        <span className="panel-eyebrow">
+            EXPERIENCE MODE
+        </span>
+
+                            <strong>
+                                {viewMode === 'STORY'
+                                    ? 'Plain-language explanation'
+                                    : 'Original event records'}
+                            </strong>
+                        </div>
+
+                        <div
+                            className="security-log-view__toggle"
+                            aria-label="Security event view"
+                        >
+                            <button
+                                type="button"
+                                aria-pressed={viewMode === 'STORY'}
+                                onClick={() => setViewMode('STORY')}
+                            >
+                                Story
+                            </button>
+
+                            <button
+                                type="button"
+                                aria-pressed={viewMode === 'TECHNICAL'}
+                                onClick={() => setViewMode('TECHNICAL')}
+                            >
+                                Technical
+                            </button>
+                        </div>
+                    </div>
+
                     {error && (
                         <div
                             className="security-log-error"
@@ -425,6 +464,8 @@ export function SecurityLogsPage() {
                                 new authentication activity.
                             </p>
                         </div>
+                    ) : viewMode === 'STORY' ? (
+                        <SecurityStoryPanel events={events} />
                     ) : (
                         <div className="security-log-table-wrapper">
                             <table className="security-log-table">
