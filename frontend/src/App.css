@@ -5325,3 +5325,217 @@
     border-top: 1px solid var(--border);
   }
 }
+
+.comparison-insights {
+  padding: clamp(26px, 4vw, 42px);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: rgba(13, 19, 16, 0.92);
+}
+
+.comparison-insights--positive {
+  border-color: rgba(81, 226, 143, 0.3);
+  background:
+          linear-gradient(
+                  135deg,
+                  rgba(81, 226, 143, 0.08),
+                  transparent 52%
+          ),
+          rgba(13, 19, 16, 0.92);
+}
+
+.comparison-insights--danger {
+  border-color: rgba(255, 100, 100, 0.35);
+  background:
+          linear-gradient(
+                  135deg,
+                  rgba(255, 100, 100, 0.07),
+                  transparent 52%
+          ),
+          rgba(13, 19, 16, 0.92);
+}
+
+.comparison-insights--warning {
+  border-color: rgba(225, 183, 68, 0.32);
+}
+
+.comparison-insights__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 36px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-insights__header > div:first-child {
+  max-width: 780px;
+}
+
+.comparison-insights__header h2 {
+  margin: 12px 0 9px;
+  color: var(--text);
+  font-size: clamp(23px, 3vw, 32px);
+  letter-spacing: -0.035em;
+}
+
+.comparison-insights__header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.comparison-insights__risk {
+  display: flex;
+  min-width: 170px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.comparison-insights__risk span,
+.comparison-insights__risk small {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.comparison-insights__risk strong {
+  color: var(--primary);
+  font-family: var(--mono);
+  font-size: 17px;
+}
+
+.comparison-insights--danger
+.comparison-insights__risk strong {
+  color: var(--danger);
+}
+
+.comparison-insights--warning
+.comparison-insights__risk strong {
+  color: var(--warning);
+}
+
+.comparison-insights__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.comparison-insight {
+  min-height: 220px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(6, 11, 8, 0.52);
+}
+
+.comparison-insight > span {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.comparison-insight > strong {
+  display: block;
+  margin-top: 14px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 23px;
+}
+
+.comparison-insight h3 {
+  margin: 22px 0 8px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.comparison-insight p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.comparison-insight--positive {
+  border-color: rgba(81, 226, 143, 0.22);
+}
+
+.comparison-insight--positive > strong {
+  color: var(--primary);
+}
+
+.comparison-insight--warning {
+  border-color: rgba(225, 183, 68, 0.25);
+}
+
+.comparison-insight--warning > strong {
+  color: var(--warning);
+}
+
+.comparison-insight--danger {
+  border-color: rgba(255, 100, 100, 0.3);
+}
+
+.comparison-insight--danger > strong {
+  color: var(--danger);
+}
+
+.comparison-insights__next {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(5, 10, 8, 0.42);
+}
+
+.comparison-insights__next span {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.comparison-insights__next p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1080px) {
+  .comparison-insights__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .comparison-insights__header,
+  .comparison-insights__next {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .comparison-insights__risk {
+    align-items: flex-start;
+  }
+
+  .comparison-insights__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-insight {
+    min-height: auto;
+  }
+}

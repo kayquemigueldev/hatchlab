@@ -230,14 +230,14 @@ describe('useDashboardOverview', () => {
                 expect(
                     getDashboardOverviewMock,
                 ).toHaveBeenCalledTimes(2)
+
+                expect(result.current.overview)
+                    .toEqual(UPDATED_OVERVIEW)
             },
             {
                 timeout: 1500,
             },
         )
-
-        expect(result.current.overview)
-            .toEqual(UPDATED_OVERVIEW)
 
         unmount()
 

@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { SimulationSession } from '../attacks/attack.types'
+import { ComparisonInsightsPanel } from './ComparisonInsightsPanel'
 import type {
     SecurityScoreBreakdown,
     SimulationMetrics,
@@ -410,6 +411,10 @@ export function ComparisonPage() {
                     </section>
                 ) : (
                     <div className="comparison-results">
+                        <ComparisonInsightsPanel
+                            comparison={comparison}
+                            securityScore={securityScore}
+                        />
                         <section className="security-score">
                             <div className="security-score__summary">
                                 <div
