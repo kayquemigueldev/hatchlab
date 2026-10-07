@@ -35,6 +35,8 @@ describe('securityStory mapper', () => {
         )
         expect(story.timeline).toEqual([])
         expect(story.highestSeverity).toBeNull()
+        expect(story.assessment).toBe('NO ACTIVITY')
+        expect(story.tone).toBe('neutral')
     })
 
     it('summarizes repeated credential activity', () => {
@@ -58,6 +60,8 @@ describe('securityStory mapper', () => {
         expect(story.headline).toBe(
             'The login system rejected the password guesses',
         )
+        expect(story.assessment).toBe('ATTACK REJECTED')
+        expect(story.tone).toBe('warning')
         expect(
             story.timeline.map((item) => item.title),
         ).toEqual([
@@ -92,6 +96,8 @@ describe('securityStory mapper', () => {
         expect(story.highestSeverity).toBe(
             'CRITICAL',
         )
+        expect(story.assessment).toBe('RISK DETECTED')
+        expect(story.tone).toBe('danger')
     })
 
     it('translates technical events into plain language', () => {

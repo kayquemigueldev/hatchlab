@@ -19,6 +19,8 @@ export interface SecurityStoryEvent {
 export interface SecurityStory {
     headline: string
     explanation: string
+    assessment: string
+    tone: SecurityStoryTone
     totalEvents: number
     loginAttempts: number
     failedAttempts: number

@@ -178,25 +178,34 @@ export function buildSecurityStory(
     let headline = 'No security activity recorded'
     let explanation =
         'Run a guided simulation to generate an understandable security story.'
+    let assessment = 'NO ACTIVITY'
+    let tone: SecurityStoryTone = 'neutral'
 
     if (successfulAttempts > 0) {
         headline =
             'The simulated attacker found valid credentials'
         explanation =
             'At least one password guess succeeded. Review which defenses were disabled or did not react before the successful login.'
+        assessment = 'RISK DETECTED'
+        tone = 'danger'
     } else if (defenseActions > 0) {
         headline = 'The defenses reacted to the attack'
         explanation =
             'One or more controls detected, slowed, or blocked the controlled password attack.'
+        assessment = 'DEFENSE RESPONSE'
+        tone = 'safe'
     } else if (failedAttempts > 0) {
         headline =
             'The login system rejected the password guesses'
         explanation =
             'The tested passwords were incorrect, but no defensive intervention appears in these events.'
+        assessment = 'ATTACK REJECTED'
+        tone = 'warning'
     } else if (events.length > 0) {
         headline = 'Security activity was recorded'
         explanation =
             'The laboratory recorded system activity that can be inspected in the timeline.'
+        assessment = 'ACTIVITY'
     }
 
     const notableEvents = events
@@ -245,6 +254,8 @@ export function buildSecurityStory(
     return {
         headline,
         explanation,
+        assessment,
+        tone,
         totalEvents: events.length,
         loginAttempts,
         failedAttempts,

@@ -5099,15 +5099,16 @@
   line-height: 1.65;
 }
 
-.security-story__severity {
+.security-story__assessment {
   display: flex;
-  min-width: 150px;
+  min-width: 190px;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
 }
 
-.security-story__severity span {
+.security-story__assessment span,
+.security-story__assessment small {
   color: var(--text-muted);
   font-family: var(--mono);
   font-size: 8px;
@@ -5115,10 +5116,41 @@
   letter-spacing: 0.12em;
 }
 
-.security-story__severity strong {
+.security-story__assessment strong {
   color: var(--primary);
   font-family: var(--mono);
   font-size: 18px;
+}
+
+.security-story__assessment small {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+.security-story--danger .security-story__summary {
+  border-color: rgba(255, 100, 100, 0.34);
+  background:
+          linear-gradient(
+                  135deg,
+                  rgba(255, 100, 100, 0.08),
+                  transparent 62%
+          ),
+          rgba(8, 14, 11, 0.72);
+}
+
+.security-story--danger
+.security-story__assessment strong {
+  color: var(--danger);
+}
+
+.security-story--warning .security-story__summary {
+  border-color: rgba(225, 183, 68, 0.3);
+}
+
+.security-story--warning
+.security-story__assessment strong {
+  color: var(--warning);
 }
 
 .security-story__metrics {
@@ -5308,8 +5340,12 @@
     width: 100%;
   }
 
-  .security-story__severity {
+  .security-story__assessment {
     align-items: flex-start;
+  }
+
+  .security-story__assessment small {
+    text-align: left;
   }
 
   .security-story__metrics {

@@ -58,6 +58,10 @@ describe('SecurityStoryPanel', () => {
                 '1 password guess was checked',
             ),
         ).toBeInTheDocument()
+
+        expect(
+            screen.getByText('ATTACK REJECTED'),
+        ).toBeInTheDocument()
     })
 
     it('highlights defensive reactions', () => {
@@ -87,6 +91,40 @@ describe('SecurityStoryPanel', () => {
             ),
         ).toBeInTheDocument()
 
-        expect(screen.getByText('HIGH')).toBeInTheDocument()
+        expect(
+            screen.getByText('DEFENSE RESPONSE'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText(
+                'Highest recorded severity: HIGH',
+            ),
+        ).toBeInTheDocument()
+    })
+
+    it('marks successful credentials as a risk regardless of raw severity', () => {
+        render(
+            <SecurityStoryPanel
+                events={[
+                    createEvent(
+                        'LOGIN_SUCCESS',
+                        '2026-10-03T12:00:03Z',
+                        {
+                            severity: 'LOW',
+                        },
+                    ),
+                ]}
+            />,
+        )
+
+        expect(
+            screen.getByText('RISK DETECTED'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText(
+                'Highest recorded severity: LOW',
+            ),
+        ).toBeInTheDocument()
     })
 })

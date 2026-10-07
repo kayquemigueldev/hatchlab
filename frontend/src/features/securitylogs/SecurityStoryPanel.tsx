@@ -24,7 +24,10 @@ export function SecurityStoryPanel({
 
     return (
         <section
-            className="security-story"
+            className={[
+                'security-story',
+                `security-story--${story.tone}`,
+            ].join(' ')}
             aria-label="Plain-language security story"
         >
             <header className="security-story__summary">
@@ -38,11 +41,13 @@ export function SecurityStoryPanel({
                     <p>{story.explanation}</p>
                 </div>
 
-                <div className="security-story__severity">
-                    <span>HIGHEST SEVERITY</span>
-                    <strong>
+                <div className="security-story__assessment">
+                    <span>STORY ASSESSMENT</span>
+                    <strong>{story.assessment}</strong>
+                    <small>
+                        Highest recorded severity:{' '}
                         {story.highestSeverity ?? 'NONE'}
-                    </strong>
+                    </small>
                 </div>
             </header>
 
