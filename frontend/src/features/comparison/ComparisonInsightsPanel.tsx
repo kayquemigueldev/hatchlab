@@ -3,6 +3,7 @@ import type {
     SimulationComparison,
 } from './comparison.types'
 import { buildComparisonNarrative } from './comparisonInsight.mapper'
+import { downloadComparisonReport } from './comparisonReport'
 
 interface ComparisonInsightsPanelProps {
     comparison: SimulationComparison
@@ -66,8 +67,23 @@ export function ComparisonInsightsPanel({
             </div>
 
             <footer className="comparison-insights__next">
-                <span>NEXT EXPERIMENT</span>
-                <p>{narrative.nextStep}</p>
+                <div>
+                    <span>NEXT EXPERIMENT</span>
+                    <p>{narrative.nextStep}</p>
+                </div>
+
+                <button
+                    className="comparison-insights__download"
+                    type="button"
+                    onClick={() =>
+                        downloadComparisonReport(
+                            comparison,
+                            securityScore,
+                        )
+                    }
+                >
+                    Download report
+                </button>
             </footer>
         </section>
     )

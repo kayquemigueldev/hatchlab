@@ -5526,12 +5526,20 @@
 .comparison-insights__next {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 22px;
   margin-top: 18px;
   padding: 16px 18px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: rgba(5, 10, 8, 0.42);
+}
+
+.comparison-insights__next > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 22px;
 }
 
 .comparison-insights__next span {
@@ -5550,6 +5558,35 @@
   line-height: 1.6;
 }
 
+.comparison-insights__download {
+  flex: 0 0 auto;
+  padding: 11px 14px;
+  border: 1px solid rgba(81, 226, 143, 0.35);
+  border-radius: 8px;
+  background: rgba(81, 226, 143, 0.1);
+  color: var(--primary);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition:
+          border-color 160ms ease,
+          background 160ms ease,
+          transform 160ms ease;
+}
+
+.comparison-insights__download:hover {
+  border-color: var(--primary);
+  background: rgba(81, 226, 143, 0.16);
+  transform: translateY(-1px);
+}
+
+.comparison-insights__download:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
 @media (max-width: 1080px) {
   .comparison-insights__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5561,6 +5598,16 @@
   .comparison-insights__next {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .comparison-insights__next > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .comparison-insights__download {
+    width: 100%;
   }
 
   .comparison-insights__risk {

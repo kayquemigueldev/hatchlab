@@ -82,6 +82,12 @@ describe('ComparisonInsightsPanel', () => {
         expect(
             screen.getByText('LOW RISK'),
         ).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Download report',
+            }),
+        ).toBeInTheDocument()
     })
 
     it('warns when credentials still succeed', () => {
