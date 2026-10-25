@@ -29,15 +29,33 @@ public class LabUserInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (labUserRepository.existsByUsernameIgnoreCase(adminUsername)) {
+        labUserRepository
+                .findByUsernameIgnoreCase(adminUsername)
+                .ifPresentOrElse(
+                        this::synchronizePassword,
+                        this::createAdmin
+                );
+    }
+
+    private void synchronizePassword(LabUser admin) {
+        if (passwordEncoder.matches(
+                adminPassword,
+                admin.getPasswordHash()
+        )) {
             return;
         }
 
-        LabUser admin = new LabUser(
-                adminUsername,
+        admin.changePasswordHash(
                 passwordEncoder.encode(adminPassword)
         );
+    }
 
-        labUserRepository.save(admin);
+    private void createAdmin() {
+        labUserRepository.save(
+                new LabUser(
+                        adminUsername,
+                        passwordEncoder.encode(adminPassword)
+                )
+        );
     }
 }
