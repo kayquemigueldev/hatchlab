@@ -1,0 +1,102 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: hatchlab
+          POSTGRES_USER: hatchlab
+          POSTGRES_PASSWORD: hatchlab_local_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hatchlab -d hatchlab"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: jdbc:postgresql://localhost:5432/hatchlab
+      POSTGRES_USER: hatchlab
+      POSTGRES_PASSWORD: hatchlab_local_password
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Run backend tests
+        working-directory: backend
+        run: ./mvnw -B test
+
+  frontend:
+    name: Frontend validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Run frontend lint
+        working-directory: frontend
+        run: npm run lint
+
+  compose:
+    name: Docker Compose validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Create environment file
+        run: cp .env.example .env
+
+      - name: Validate Docker Compose
+        run: docker compose config -q
