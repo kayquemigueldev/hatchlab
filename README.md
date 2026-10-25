@@ -1,5 +1,7 @@
 # HATCHLAB
 
+[![Continuous Integration](https://github.com/kayquemigueldev/hatchlab/actions/workflows/ci.yml/badge.svg)](https://github.com/kayquemigueldev/hatchlab/actions/workflows/ci.yml)
+
 > A controlled authentication security laboratory for observing attacks, testing defenses, and understanding security telemetry.
 
 HATCHLAB is a local educational environment that demonstrates how repeated password attacks behave, how authentication defenses react, and how security teams interpret the resulting evidence.
@@ -430,17 +432,16 @@ hatchlab/
 
 ## Current roadmap
 
-The remaining work toward version 1.0 includes:
+The path toward version 1.0 includes:
 
-- Complete project documentation
-- GitHub Actions validation
-- End-to-end browser tests
-- Security and configuration review
-- Accessibility review
-- Reproducible guided demonstration
-- Screenshots and demonstration video
-- Versioned GitHub release
-
+- [x] Complete project documentation
+- [x] GitHub Actions validation
+- [ ] End-to-end browser tests
+- [ ] Security and configuration review
+- [ ] Accessibility review
+- [ ] Reproducible guided demonstration
+- [ ] Screenshots and demonstration video
+- [ ] Versioned GitHub release
 ## Contributing
 
 Keep every contribution inside HATCHLAB’s local and educational safety boundary.
