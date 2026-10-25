@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
     volumes:
       - hatchlab_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -48,7 +48,7 @@ services:
       CLIENT_THROTTLING_MAX_FAILURES: ${CLIENT_THROTTLING_MAX_FAILURES}
       CLIENT_THROTTLING_WINDOW_SECONDS: ${CLIENT_THROTTLING_WINDOW_SECONDS}
     ports:
-      - "${BACKEND_PORT}:8080"
+      - "127.0.0.1:${BACKEND_PORT}:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -68,7 +68,7 @@ services:
     container_name: hatchlab-frontend
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT}:80"
+      - "127.0.0.1:${FRONTEND_PORT}:80"
     depends_on:
       backend:
         condition: service_healthy
