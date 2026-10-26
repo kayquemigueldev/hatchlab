@@ -432,16 +432,105 @@ hatchlab/
 
 ## Current roadmap
 
-The path toward version 1.0 includes:
+The core laboratory is complete. The remaining work toward version 1.0
+focuses on accessibility, reproducible demonstrations, presentation, and
+release preparation.
+
+### Core platform
+
+- [x] Spring Boot backend and PostgreSQL persistence
+- [x] Flyway database migrations
+- [x] Controlled authentication and attack simulation
+- [x] Internal laboratory wordlist
+- [x] Configurable defensive controls
+- [x] Security event recording and telemetry
+- [x] Simulation comparison and security scoring
+- [x] Realtime updates through WebSocket
+- [x] Controlled laboratory reset
+
+### Educational interface
+
+- [x] Operational dashboard
+- [x] Attack and defense laboratories
+- [x] Security comparison and event logs
+- [x] Educational How It Works walkthrough
+- [x] Guided attack visualization
+- [x] Guided demonstration scenarios
+- [x] Plain-language defense explanations
+- [x] Readable security event stories
+- [x] Downloadable comparison report
+
+### Testing and automation
+
+- [x] Backend unit and integration tests
+- [x] Frontend unit and component tests
+- [x] End-to-end navigation coverage
+- [x] End-to-end keyboard navigation coverage
+- [x] GitHub Actions validation
+- [x] Docker Compose validation in CI
+- [x] End-to-end tests against the containerized stack
+
+### Infrastructure and security
+
+- [x] Containerized frontend, backend, and database
+- [x] Service health checks
+- [x] Services restricted to localhost
+- [x] Non-root backend container user
+- [x] Frontend security response headers
+- [x] Dependency vulnerability review
+- [x] Environment files excluded from version control
+- [x] Configurable and synchronized laboratory credentials
+- [x] Security and configuration review
+
+### Documentation
 
 - [x] Complete project documentation
-- [x] GitHub Actions validation
-- [x] End-to-end browser tests
-- [x] Security and configuration review
-- [ ] Accessibility review
-- [ ] Reproducible guided demonstration
-- [ ] Screenshots and demonstration video
-- [ ] Versioned GitHub release
+- [x] Architecture and technology overview
+- [x] Installation and configuration instructions
+- [x] API and realtime channel overview
+- [x] Local development and testing guide
+- [x] Safety boundary and disclaimer
+- [x] Interface screenshots
+- [x] Continuous Integration badge
+
+### Accessibility
+
+- [x] Skip-to-content keyboard navigation
+- [x] Visible keyboard focus
+- [x] Identifiable main content on every page
+- [x] End-to-end keyboard accessibility test
+- [ ] Review accessible names and descriptions
+- [ ] Announce loading, error, and result state changes
+- [ ] Review text and state contrast
+- [ ] Respect reduced-motion preferences
+- [ ] Add automated accessibility analysis
+- [ ] Validate complete keyboard-only workflows
+
+### Reproducible demonstration
+
+- [x] Guided attack scenarios
+- [x] Predictable local laboratory credentials
+- [x] Controlled data reset
+- [x] Baseline and protected comparison workflow
+- [ ] Create a deterministic demonstration sequence
+- [ ] Automate demonstration preparation
+- [ ] Cover the complete scenario with Playwright
+- [ ] Document the expected result step by step
+
+### Presentation and release
+
+- [x] Main interface screenshots
+- [ ] Record a demonstration video or GIF
+- [ ] Add the demonstration media to the README
+- [ ] Prepare a concise portfolio description
+- [ ] Complete final project validation
+- [ ] Create a changelog
+- [ ] Create the `v1.0.0` tag
+- [ ] Publish the versioned GitHub release
+
+The recommended completion order is accessibility, reproducible demonstration,
+presentation media, and finally the version 1.0 release.
+
 ## Contributing
 
 Keep every contribution inside HATCHLAB’s local and educational safety boundary.
