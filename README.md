@@ -437,7 +437,7 @@ The path toward version 1.0 includes:
 - [x] Complete project documentation
 - [x] GitHub Actions validation
 - [x] End-to-end browser tests
-- [ ] Security and configuration review
+- [x] Security and configuration review
 - [ ] Accessibility review
 - [ ] Reproducible guided demonstration
 - [ ] Screenshots and demonstration video
