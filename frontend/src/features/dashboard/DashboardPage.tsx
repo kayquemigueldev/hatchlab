@@ -177,7 +177,11 @@ export function DashboardPage() {
     ]
 
     return (
-        <main className="dashboard dashboard--operational">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="dashboard dashboard--operational"
+        >
             <section className="dashboard__heading">
                 <div className="dashboard__intro">
                     <span className="environment-label">

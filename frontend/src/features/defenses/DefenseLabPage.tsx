@@ -105,7 +105,11 @@ export function DefenseLabPage() {
 
   if (loading && !configuration) {
     return (
-      <main className="dashboard dashboard--page">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="dashboard dashboard--page"
+        >
         <section className="page-state">
           <span className="page-state__indicator" />
           <strong>Loading defensive controls</strong>
@@ -117,7 +121,11 @@ export function DefenseLabPage() {
 
   if (!configuration) {
     return (
-      <main className="dashboard dashboard--page">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="dashboard dashboard--page"
+        >
         <section className="page-state page-state--error">
           <strong>Defense configuration unavailable</strong>
           <p>
@@ -138,7 +146,11 @@ export function DefenseLabPage() {
   }
 
   return (
-    <main className="dashboard dashboard--page defense-page">
+      <main
+          id="main-content"
+          tabIndex={-1}
+          className="dashboard dashboard--page defense-page"
+      >
       <section className="page-heading">
         <div>
           <span className="environment-label">

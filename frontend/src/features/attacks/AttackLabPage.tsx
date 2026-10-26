@@ -60,7 +60,11 @@ export function AttackLabPage() {
     }
 
     return (
-        <main className="attack-lab">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="attack-lab"
+        >
             <section className="attack-lab__content">
                 <div className="attack-lab__heading">
                     <div>

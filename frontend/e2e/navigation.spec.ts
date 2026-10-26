@@ -67,4 +67,25 @@ test.describe('HATCHLAB navigation', () => {
             }
         },
     )
+    test(
+        'allows keyboard users to skip to the main content',
+        async ({ page }) => {
+            await page.goto('/')
+
+            const skipLink = page.getByRole('link', {
+                name: 'Skip to main content',
+            })
+
+            await page.keyboard.press('Tab')
+
+            await expect(skipLink).toBeFocused()
+            await expect(skipLink).toBeVisible()
+
+            await page.keyboard.press('Enter')
+
+            await expect(
+                page.locator('#main-content'),
+            ).toBeFocused()
+        },
+    )
 })

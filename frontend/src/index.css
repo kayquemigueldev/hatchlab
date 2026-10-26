@@ -52,6 +52,18 @@ button {
   cursor: pointer;
 }
 
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [tabindex]
+):focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
 a {
   color: inherit;
 }

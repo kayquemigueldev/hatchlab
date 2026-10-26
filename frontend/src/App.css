@@ -1,3 +1,27 @@
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  top: 16px;
+  left: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  color: #041008;
+  background: var(--primary);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 24px));
+  transition: transform 150ms ease;
+}
+
+.skip-link:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
+  transform: translateY(0);
+}
+
 .app-shell {
   position: relative;
   display: flex;

@@ -46,6 +46,13 @@ export function AppLayout() {
 
     return (
         <div className="app-shell">
+            <a
+                className="skip-link"
+                href="#main-content"
+            >
+                Skip to main content
+            </a>
+
             <header className="app-header">
                 <NavLink
                     to="/"

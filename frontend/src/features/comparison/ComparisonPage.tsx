@@ -188,7 +188,11 @@ export function ComparisonPage() {
         protectedSessions.length === 0
 
     return (
-        <main className="comparison-page">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="comparison-page"
+        >
             <section className="comparison-page__content">
                 <div className="comparison-page__heading">
                     <div>

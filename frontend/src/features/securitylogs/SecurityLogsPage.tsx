@@ -176,7 +176,11 @@ export function SecurityLogsPage() {
     ).length
 
     return (
-        <main className="security-logs">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="security-logs"
+        >
             <section className="security-logs__content">
                 <div className="security-logs__heading">
                     <div>

@@ -154,7 +154,11 @@ const RESULT_COLORS = [
 
 export function HowItWorksPage() {
     return (
-        <main className="learning-page">
+        <main
+            id="main-content"
+            tabIndex={-1}
+            className="learning-page"
+        >
             <section className="learning-hero">
                 <div className="learning-hero__content">
                     <span className="section-eyebrow">
