@@ -13,9 +13,10 @@
   --surface: #0d1310;
   --surface-elevated: #111a15;
   --border: #223027;
-  --border-strong: #34483a;
+  --border-strong: #556e5d;
   --text: #e8f0eb;
   --text-muted: #829087;
+  --text-subtle: #78887f;
   --primary: #51e28f;
   --primary-muted: rgba(81, 226, 143, 0.12);
   --warning: #f4c95d;

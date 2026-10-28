@@ -502,6 +502,7 @@ release preparation.
 - [x] Review accessible names and descriptions
 - [x] Announce loading, error, and result state changes
 - [x] Respect reduced-motion preferences
+- [x] Review text and state contrast
 - [x] Add automated accessibility analysis
 - [ ] Validate complete keyboard-only workflows
 

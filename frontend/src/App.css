@@ -290,7 +290,7 @@
   gap: 24px;
   padding: 18px clamp(24px, 5vw, 72px);
   border-top: 1px solid var(--border);
-  color: #607067;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: 0.12em;
@@ -587,7 +587,7 @@
   position: absolute;
   bottom: 22px;
   left: 24px;
-  color: #617068;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 700;
@@ -1029,7 +1029,7 @@
 }
 
 .attack-field small {
-  color: #68776e;
+  color: var(--text-subtle);
   font-size: 11px;
   line-height: 1.55;
 }
@@ -1052,7 +1052,7 @@
 .attack-field__range-labels {
   display: flex;
   justify-content: space-between;
-  color: #617068;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 9px;
 }
@@ -2408,7 +2408,7 @@
 }
 
 .security-log-field input::placeholder {
-  color: #59675e;
+  color: var(--text-subtle);
 }
 
 .security-log-field input:focus,
@@ -2550,7 +2550,7 @@
 .security-log-table th {
   padding: 13px 14px;
   border-bottom: 1px solid var(--border);
-  color: #68776e;
+  color: var(--text-subtle);
   background: #0a100d;
   font-family: var(--mono);
   font-size: 7px;
@@ -2624,7 +2624,7 @@
 
 .security-event__timestamp span {
   margin-top: 4px;
-  color: #68776e;
+  color: var(--text-subtle);
   font-size: 8px;
 }
 
@@ -2704,7 +2704,7 @@
 }
 
 .security-event__empty-value {
-  color: #536057;
+  color: var(--text-subtle);
 }
 
 .security-log-pagination {
@@ -3446,7 +3446,7 @@
 }
 
 .attack-flow__number {
-  color: #526158;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 8px;
   font-weight: 700;
@@ -3461,7 +3461,7 @@
 
 .attack-flow__stage small {
   margin-top: 7px;
-  color: #627068;
+  color: var(--text-subtle);
   font-size: 9px;
   line-height: 1.5;
 }
@@ -4063,7 +4063,7 @@
 }
 
 .guided-scenario-card__sequence {
-  color: #5e6d64;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 700;
@@ -4086,7 +4086,7 @@
 
 .guided-scenario-card__select {
   margin-top: auto;
-  color: #66756c;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 8px;
   font-weight: 700;
@@ -4175,7 +4175,7 @@
 .guided-scenario-detail__content span,
 .guided-scenario-detail__defenses > span {
   display: block;
-  color: #6b7a71;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 7px;
   font-weight: 700;
@@ -4235,7 +4235,7 @@
 }
 
 .guided-scenario-detail__action > small {
-  color: #65736b;
+  color: var(--text-subtle);
   font-size: 8px;
   line-height: 1.45;
   text-align: center;
@@ -4456,7 +4456,7 @@
 }
 
 .learning-hero__safety dt {
-  color: #66756c;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 7px;
   font-weight: 700;
@@ -4552,7 +4552,7 @@
 }
 
 .learning-flow__heading small {
-  color: #68776e;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 8px;
   font-weight: 700;
@@ -4717,7 +4717,7 @@
 }
 
 .learning-defense > div:first-child small {
-  color: #66756c;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 7px;
   font-weight: 700;
@@ -4738,7 +4738,7 @@
 }
 
 .learning-defense dt {
-  color: #6d7c73;
+  color: var(--text-subtle);
   font-family: var(--mono);
   font-size: 7px;
   font-weight: 700;
