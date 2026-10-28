@@ -110,11 +110,16 @@ describe('LabResetPanel', () => {
             }),
         )
 
-        expect(
-            await screen.findByText(
-                /laboratory reset completed/i,
-            ),
-        ).toBeInTheDocument()
+        const status = await screen.findByRole('status')
+
+        expect(status).toHaveAttribute(
+            'aria-live',
+            'polite',
+        )
+
+        expect(status).toHaveTextContent(
+            /laboratory reset completed/i,
+        )
 
         expect(
             screen.getByText(
@@ -161,11 +166,11 @@ describe('LabResetPanel', () => {
             }),
         )
 
-        expect(
-            await screen.findByText(
-                /cannot be reset while a simulation is running/i,
-            ),
-        ).toBeInTheDocument()
+        const alert = await screen.findByRole('alert')
+
+        expect(alert).toHaveTextContent(
+            /cannot be reset while a simulation is running/i,
+        )
 
         expect(input).toHaveValue(
             'RESET_HATCHLAB',

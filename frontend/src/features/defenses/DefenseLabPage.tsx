@@ -110,7 +110,12 @@ export function DefenseLabPage() {
             tabIndex={-1}
             className="dashboard dashboard--page"
         >
-        <section className="page-state">
+          <section
+              className="page-state"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+          >
           <span className="page-state__indicator" />
           <strong>Loading defensive controls</strong>
           <p>Reading the current laboratory configuration.</p>
@@ -126,7 +131,11 @@ export function DefenseLabPage() {
             tabIndex={-1}
             className="dashboard dashboard--page"
         >
-        <section className="page-state page-state--error">
+          <section
+              className="page-state page-state--error"
+              role="alert"
+              aria-atomic="true"
+          >
           <strong>Defense configuration unavailable</strong>
           <p>
             {error ??
@@ -207,15 +216,24 @@ export function DefenseLabPage() {
           <strong>{formatUpdatedAt(updatedAt)}</strong>
 
           {message && (
-            <p className="form-message form-message--success">
-              {message}
-            </p>
+              <p
+                  className="form-message form-message--success"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+              >
+                {message}
+              </p>
           )}
 
           {error && (
-            <p className="form-message form-message--error">
-              {error}
-            </p>
+              <p
+                  className="form-message form-message--error"
+                  role="alert"
+                  aria-atomic="true"
+              >
+                {error}
+              </p>
           )}
         </div>
 

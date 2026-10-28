@@ -111,13 +111,22 @@ export function LabResetPanel({
             </form>
 
             {error && (
-                <p className="lab-reset__message lab-reset__message--error">
+                <p
+                    className="lab-reset__message lab-reset__message--error"
+                    role="alert"
+                    aria-atomic="true"
+                >
                     {error}
                 </p>
             )}
 
             {result && (
-                <div className="lab-reset__result">
+                <div
+                    className="lab-reset__result"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                >
                     <strong>Laboratory reset completed</strong>
 
                     <span>
