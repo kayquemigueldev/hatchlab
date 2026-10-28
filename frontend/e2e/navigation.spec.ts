@@ -88,4 +88,37 @@ test.describe('HATCHLAB navigation', () => {
             ).toBeFocused()
         },
     )
+
+    test(
+        'respects reduced motion preferences',
+        async ({ page }) => {
+            await page.emulateMedia({
+                reducedMotion: 'reduce',
+            })
+
+            await page.goto('/')
+
+            expect(
+                await page.evaluate(() =>
+                    window.matchMedia(
+                        '(prefers-reduced-motion: reduce)',
+                    ).matches,
+                ),
+            ).toBe(true)
+
+            const transitionDuration = await page
+                .locator('.skip-link')
+                .evaluate((element) =>
+                    Number.parseFloat(
+                        getComputedStyle(
+                            element,
+                        ).transitionDuration,
+                    ),
+                )
+
+            expect(transitionDuration)
+                .toBeLessThanOrEqual(0.001)
+        },
+    )
+
 })
