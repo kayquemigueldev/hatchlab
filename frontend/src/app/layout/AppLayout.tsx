@@ -57,7 +57,6 @@ export function AppLayout() {
                 <NavLink
                     to="/"
                     className="brand"
-                    aria-label="HATCHLAB dashboard"
                 >
                     <div
                         className="brand__mark"

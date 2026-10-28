@@ -499,11 +499,10 @@ release preparation.
 - [x] Visible keyboard focus
 - [x] Identifiable main content on every page
 - [x] End-to-end keyboard accessibility test
-- [ ] Review accessible names and descriptions
-- [ ] Announce loading, error, and result state changes
-- [ ] Review text and state contrast
-- [ ] Respect reduced-motion preferences
-- [ ] Add automated accessibility analysis
+- [x] Review accessible names and descriptions
+- [x] Announce loading, error, and result state changes
+- [x] Respect reduced-motion preferences
+- [x] Add automated accessibility analysis
 - [ ] Validate complete keyboard-only workflows
 
 ### Reproducible demonstration

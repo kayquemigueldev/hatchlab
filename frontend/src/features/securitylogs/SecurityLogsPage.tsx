@@ -505,9 +505,12 @@ export function SecurityLogsPage() {
 
                     <div className="security-log-pagination">
                         <div className="security-log-pagination__size">
-                            <span>Rows per page</span>
+                            <label htmlFor="security-log-page-size">
+                                Rows per page
+                            </label>
 
                             <select
+                                id="security-log-page-size"
                                 value={size}
                                 disabled={loading}
                                 onChange={(event) =>
