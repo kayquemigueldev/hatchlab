@@ -111,6 +111,7 @@ export function AttackLabPage() {
                                     : 'attack-view-mode__option'
                             }
                             type="button"
+                            aria-pressed={viewMode === 'GUIDED'}
                             onClick={() => setViewMode('GUIDED')}
                         >
                             Guided
@@ -123,6 +124,7 @@ export function AttackLabPage() {
                                     : 'attack-view-mode__option'
                             }
                             type="button"
+                            aria-pressed={viewMode === 'TECHNICAL'}
                             onClick={() =>
                                 setViewMode('TECHNICAL')
                             }

@@ -1,6 +1,12 @@
 import {
+    useEffect,
+    useRef,
+} from 'react'
+
+import {
     NavLink,
     Outlet,
+    useLocation,
 } from 'react-router'
 import { LabStatusBadge } from '../../features/system/LabStatusBadge'
 import {
@@ -43,6 +49,27 @@ const NAVIGATION_ITEMS = [
 
 export function AppLayout() {
     const labHealth = useLabHealth()
+
+    const location = useLocation()
+
+    const previousPathname =
+        useRef(location.pathname)
+
+    useEffect(() => {
+        if (
+            previousPathname.current ===
+            location.pathname
+        ) {
+            return
+        }
+
+        previousPathname.current =
+            location.pathname
+
+        document
+            .getElementById('main-content')
+            ?.focus()
+    }, [location.pathname])
 
     return (
         <div className="app-shell">
