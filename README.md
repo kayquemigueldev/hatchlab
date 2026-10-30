@@ -256,20 +256,40 @@ Password: HatchLab!2026
 
 These credentials belong only to the controlled laboratory account. Change them in `.env` when necessary.
 
-## Suggested demonstration
+## Reproducible demonstration
 
-For the clearest demonstration of HATCHLAB:
+Using the default HATCHLAB configuration, the following sequence produces a predictable baseline and protected comparison:
 
-1. Open **How It Works** and review the authentication flow.
-2. Open **Attack Lab**.
-3. Run the **Attack without defenses** scenario.
-4. Observe the attempt timeline and final result.
-5. Open **Defense Lab** and review the available controls.
-6. Run a protected scenario such as **Account Lockout** or **Full Protection**.
-7. Open **Comparison** and select the baseline and protected sessions.
-8. Review the security score and plain-language defense assessment.
-9. Download the experiment report.
-10. Open **Security Logs** to inspect the recorded evidence.
+1. Open **Dashboard** and reset the laboratory using `RESET_HATCHLAB`.
+2. Open **Attack Lab** and select **Attack without defenses**.
+3. Prepare the scenario and set the delay to **100 ms**.
+4. Start the simulation and wait for it to finish.
+5. Confirm the baseline result:
+    - Status: `SUCCESS`
+    - Total attempts: `75`
+    - Failed attempts: `74`
+    - Successful attempts: `1`
+6. Wait at least **11 seconds** so previous failures leave the defensive observation window.
+7. Select **Account lockout protection**.
+8. Prepare the scenario and set the delay to **100 ms**.
+9. Start the protected simulation and wait for it to finish.
+10. Confirm the protected result:
+    - Status: `BLOCKED`
+    - Total attempts: `4`
+    - Failed attempts: `3`
+    - Blocked attempts: `1`
+    - Successful attempts: `0`
+11. Open **Comparison** and compare the automatically selected sessions.
+12. Confirm the final assessment:
+    - Account outcome: `1 → 0`
+    - Attempts prevented: `71`
+    - Successful attempts reduced: `1`
+    - Security score: `83 / 100`
+    - Risk level: `LOW RISK`
+13. Download the experiment report.
+14. Open **Security Logs** and review the recorded attack and defense story.
+
+The 11-second pause prevents failures from the baseline simulation from affecting the account-lockout result. This keeps the demonstration consistent when using the default configuration.
 
 ## Application pages
 
@@ -504,7 +524,7 @@ release preparation.
 - [x] Respect reduced-motion preferences
 - [x] Review text and state contrast
 - [x] Add automated accessibility analysis
-- [ ] Validate complete keyboard-only workflows
+- [x] Validate complete keyboard-only workflows
 
 ### Reproducible demonstration
 
@@ -512,10 +532,10 @@ release preparation.
 - [x] Predictable local laboratory credentials
 - [x] Controlled data reset
 - [x] Baseline and protected comparison workflow
-- [ ] Create a deterministic demonstration sequence
+- [x] Create a deterministic demonstration sequence
 - [ ] Automate demonstration preparation
 - [ ] Cover the complete scenario with Playwright
-- [ ] Document the expected result step by step
+- [x] Document the expected result step by step
 
 ### Presentation and release
 
