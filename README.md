@@ -290,6 +290,14 @@ Using the default HATCHLAB configuration, the following sequence produces a pred
 14. Open **Security Logs** and review the recorded attack and defense story.
 
 The 11-second pause prevents failures from the baseline simulation from affecting the account-lockout result. This keeps the demonstration consistent when using the default configuration.
+The complete preparation can also be automated while the containerized laboratory is running:
+
+```bash
+cd frontend
+npm run demo:prepare
+```
+
+The command resets the laboratory, runs both simulations, validates their outcomes, and confirms the expected comparison score.
 
 ## Application pages
 
@@ -533,7 +541,7 @@ release preparation.
 - [x] Controlled data reset
 - [x] Baseline and protected comparison workflow
 - [x] Create a deterministic demonstration sequence
-- [ ] Automate demonstration preparation
+- [x] Automate demonstration preparation
 - [ ] Cover the complete scenario with Playwright
 - [x] Document the expected result step by step
 
