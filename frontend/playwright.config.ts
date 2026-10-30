@@ -21,6 +21,17 @@ export default defineConfig({
     projects: [
         {
             name: 'chromium',
+            testIgnore:
+                /reproducible-demo\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+            },
+        },
+        {
+            name: 'reproducible-demo',
+            testMatch:
+                /reproducible-demo\.spec\.ts/,
+            dependencies: ['chromium'],
             use: {
                 ...devices['Desktop Chrome'],
             },

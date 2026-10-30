@@ -542,7 +542,7 @@ release preparation.
 - [x] Baseline and protected comparison workflow
 - [x] Create a deterministic demonstration sequence
 - [x] Automate demonstration preparation
-- [ ] Cover the complete scenario with Playwright
+- [x] Cover the complete scenario with Playwright
 - [x] Document the expected result step by step
 
 ### Presentation and release
