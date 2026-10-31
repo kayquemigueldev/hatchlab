@@ -12,6 +12,8 @@ The complete learning cycle is:
 
 ## Project status
 
+Release history is documented in [CHANGELOG.md](CHANGELOG.md).
+
 HATCHLAB currently provides a functional local MVP. The core laboratory, defensive controls, real-time monitoring, comparison tools, educational views, automated tests, and containerized environment are implemented.
 
 The project is currently entering its documentation, reliability, and release-preparation phase.
@@ -566,7 +568,7 @@ release preparation.
 - [x] Add the demonstration media to the README
 - [x] Prepare a concise portfolio description
 - [x] Complete final project validation
-- [ ] Create a changelog
+- [x] Create a changelog
 - [ ] Create the `v1.0.0` tag
 - [ ] Publish the versioned GitHub release
 
