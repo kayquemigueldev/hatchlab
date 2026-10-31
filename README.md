@@ -569,8 +569,8 @@ release preparation.
 - [x] Prepare a concise portfolio description
 - [x] Complete final project validation
 - [x] Create a changelog
-- [ ] Create the `v1.0.0` tag
-- [ ] Publish the versioned GitHub release
+- [x] Create the `v1.0.0` tag
+- [x] Publish the versioned GitHub release
 
 The recommended completion order is accessibility, reproducible demonstration,
 presentation media, and finally the version 1.0 release.
