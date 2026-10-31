@@ -16,7 +16,7 @@ RUN addgroup -S hatchlab \
     && adduser -S hatchlab -G hatchlab
 
 COPY --from=build \
-    /workspace/target/backend-0.0.1-SNAPSHOT.jar \
+    /workspace/target/backend-*.jar \
     /app/hatchlab-backend.jar
 
 USER hatchlab
