@@ -565,7 +565,7 @@ release preparation.
 - [x] Record a demonstration video or GIF
 - [x] Add the demonstration media to the README
 - [x] Prepare a concise portfolio description
-- [ ] Complete final project validation
+- [x] Complete final project validation
 - [ ] Create a changelog
 - [ ] Create the `v1.0.0` tag
 - [ ] Publish the versioned GitHub release
