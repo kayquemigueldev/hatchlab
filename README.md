@@ -16,6 +16,12 @@ HATCHLAB currently provides a functional local MVP. The core laboratory, defensi
 
 The project is currently entering its documentation, reliability, and release-preparation phase.
 
+## Portfolio summary
+
+HATCHLAB is a full-stack authentication security laboratory that turns repeated-password attack simulations into an understandable educational experience. It allows users to run controlled baseline and protected experiments, configure defensive controls, follow attacks in real time, inspect security telemetry, compare outcomes, and generate evidence-based security reports.
+
+The project combines Java 21, Spring Boot, PostgreSQL, React, TypeScript, WebSocket, Docker, and Nginx with automated unit, integration, accessibility, keyboard, and end-to-end testing. Every simulation remains restricted to HATCHLAB’s own localhost environment, providing a safe and reproducible way to demonstrate authentication attacks, defensive engineering, and security observability.
+
 ## Safety boundary
 
 HATCHLAB is designed exclusively for authorized testing against its own local authentication environment.
@@ -558,7 +564,7 @@ release preparation.
 - [x] Main interface screenshots
 - [x] Record a demonstration video or GIF
 - [x] Add the demonstration media to the README
-- [ ] Prepare a concise portfolio description
+- [x] Prepare a concise portfolio description
 - [ ] Complete final project validation
 - [ ] Create a changelog
 - [ ] Create the `v1.0.0` tag
