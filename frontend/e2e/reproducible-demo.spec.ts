@@ -4,6 +4,18 @@ import {
     type Page,
 } from '@playwright/test'
 
+const recordingDemo =
+    process.env.HATCHLAB_RECORD_DEMO === 'true'
+
+async function pauseForPresentation(
+    page: Page,
+    milliseconds: number,
+) {
+    if (recordingDemo) {
+        await page.waitForTimeout(milliseconds)
+    }
+}
+
 async function prepareScenario(
     page: Page,
     scenarioName: RegExp,
@@ -75,6 +87,8 @@ test.describe(
                         }),
                 ).toBeVisible()
 
+                await pauseForPresentation(page, 1_200)
+
                 await page
                     .getByRole('link', {
                         name: 'Attack Lab',
@@ -127,6 +141,8 @@ test.describe(
                                 'passwords rejected',
                         }),
                 ).toContainText('74')
+
+                await pauseForPresentation(page, 2_500)
 
                 await page
                     .getByRole('button', {
@@ -181,6 +197,8 @@ test.describe(
                                 'attempts prevented',
                         }),
                 ).toContainText('96')
+
+                await pauseForPresentation(page, 2_500)
 
                 await page
                     .getByRole('link', {
@@ -243,6 +261,8 @@ test.describe(
                     ),
                 ).toBeVisible()
 
+                await pauseForPresentation(page, 3_500)
+
                 const downloadPromise =
                     page.waitForEvent('download')
 
@@ -281,6 +301,8 @@ test.describe(
                             'Recorded security events',
                     }),
                 ).toBeVisible()
+
+                await pauseForPresentation(page, 2_500)
             },
         )
     },

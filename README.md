@@ -108,6 +108,14 @@ The comparison includes:
 
 ## Interface
 
+### Complete laboratory demonstration
+
+Watch the complete reproducible workflow: laboratory reset, baseline attack, account-lockout protection, security comparison, report generation, and recorded telemetry.
+
+[![Watch the complete HATCHLAB demonstration](docs/images/guided-attack.png)](docs/media/hatchlab-demo.webm)
+
+_Click the image to open the recorded demonstration._
+
 ### Operational dashboard
 
 Monitor laboratory health, simulation activity, defensive coverage, and recent security events.
@@ -548,8 +556,8 @@ release preparation.
 ### Presentation and release
 
 - [x] Main interface screenshots
-- [ ] Record a demonstration video or GIF
-- [ ] Add the demonstration media to the README
+- [x] Record a demonstration video or GIF
+- [x] Add the demonstration media to the README
 - [ ] Prepare a concise portfolio description
 - [ ] Complete final project validation
 - [ ] Create a changelog

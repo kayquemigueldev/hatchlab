@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "demo:prepare": "node scripts/prepare-demo.mjs",
+    "demo:record": "HATCHLAB_RECORD_DEMO=true playwright test --project=reproducible-demo --no-deps",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",

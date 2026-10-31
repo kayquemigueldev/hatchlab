@@ -34,6 +34,21 @@ export default defineConfig({
             dependencies: ['chromium'],
             use: {
                 ...devices['Desktop Chrome'],
+                viewport: {
+                    width: 1440,
+                    height: 900,
+                },
+                video:
+                    process.env.HATCHLAB_RECORD_DEMO ===
+                    'true'
+                        ? {
+                            mode: 'on',
+                            size: {
+                                width: 1440,
+                                height: 900,
+                            },
+                        }
+                        : 'retain-on-failure',
             },
         },
     ],
